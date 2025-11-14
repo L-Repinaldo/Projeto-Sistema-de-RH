@@ -3,7 +3,7 @@
 
 Este projeto é um Sistema de Recursos Humanos focado em três pilares principais:
 gestão de dados sensíveis, visualização inteligente de informações e controle rigoroso de acesso.
-Ele serve como uma aplicação profissional completa, adequada para portfólio, e como base estruturada para experimentos posteriores com privacidade (Projeto B).
+Ele serve como uma aplicação profissional completa, adequada para portfólio, e como base estruturada para experimentos posteriores com privacidade (Projeto B (Machine Learning) ).
 
 🎯 Objetivo Geral
 
@@ -81,7 +81,7 @@ Relatórios podem ser exportados em Excel.
 Aplicada em consultas estatísticas que expõem padrões agregados, evitando vazamento indireto de informações sensíveis.
 O mecanismo utilizado (ex.: Laplace) é configurável conforme o nível de privacidade desejado.
 
-📌 Relação com o Projeto B
+📌 Relação com o Projeto B (Machine Learning)
 
 Embora independente, o banco do Projeto A serve como base real para que o Projeto B explore:
 
