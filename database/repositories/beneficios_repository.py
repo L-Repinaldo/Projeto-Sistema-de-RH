@@ -1,40 +1,40 @@
 
-class AvaliacoesRepository():
+class BeneficiosRepository():
     
     def __init__(self, conn_factory):
         self.conn_factory = conn_factory
 
-    def create(self, id_funcionario, data_avaliacao, nota):
+    def create(self, nome):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                INSERT INTO avaliacoes (id_funcionario, data_avaliacao, nota)
+                INSERT INTO beneficios (nome)
                 VALUES (%s, %s, %s)
                 RETURNING id;
         """
 
-        cur.execute(query, (id_funcionario, data_avaliacao, nota))
+        cur.execute(query, (nome))
         setor_id = cur.fetchone()[0]
 
         cur.close()
         conn.close()
         return setor_id
     
-    def get_by_id(self, id_avaliacoes):
+    def get_by_id(self, id_beneficios):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_funcionario, data_avaliacao, nota FROM avaliacoes
+                SELECT id, nome FROM beneficios
                 WHERE id = (%s);
         """
 
-        cur.execute(query, (id_avaliacoes))
+        cur.execute(query, (id_beneficios))
         row = cur.fetchone()
 
         cur.close()
@@ -43,9 +43,7 @@ class AvaliacoesRepository():
         if row:
             return{
                 "id" : row[0],
-                "id_funcionario" : row[1],
-                "data_avaliacao" : row[2],
-                "nota" : row[3]
+                "nome" : row[1]
             }
 
         return None
@@ -57,7 +55,7 @@ class AvaliacoesRepository():
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_funcionario, data_avaliacao, nota FROM avaliacoes;
+                SELECT id, nome FROM beneficios;
         """
 
         cur.execute(query)
@@ -67,11 +65,11 @@ class AvaliacoesRepository():
         conn.close()
 
         return [
-            {"id" : r[0], "id_funcionario": r[1], "data_avaliacao" : r[2], "nota" : r[3]}
+            {"id" : r[0], "nome": r[1] }
             for r in rows
         ]
 
-    def update(self,  id_avaliacoes, id_funcionario = None, nota = None):
+    def update(self,  id_beneficios, nome = None):
 
         conn = self.conn_factory()
         
@@ -79,16 +77,11 @@ class AvaliacoesRepository():
 
         fields = []
         values = []
-
-        if id_funcionario is not None:
-
-            fields.append("id_funcionario = %s")
-            values.append(id_funcionario)
         
-        if nota is not None:
+        if nome is not None:
 
-            fields.append("nota = %s")
-            values.append(nota)
+            fields.append("nome = %s")
+            values.append(nome)
 
         if not fields:
             
@@ -97,12 +90,12 @@ class AvaliacoesRepository():
             return False
 
         query = f"""
-                UPDATE avaliacoes
+                UPDATE beneficios
                 SET {','.join(fields) }
                 WHERE id = %s;
         """
 
-        values.append(id_avaliacoes)
+        values.append(id_beneficios)
         cur.execute(query, values)
 
         cur.close()
@@ -110,19 +103,19 @@ class AvaliacoesRepository():
         return True
 
 
-    def delete(self, id_avaliacoes):
+    def delete(self, id_beneficios):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                DELETE FROM avaliacoes
+                DELETE FROM beneficios
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_avaliacoes))
+        cur.execute(query, (id_beneficios))
 
         cur.close()
         conn.close()
-        return id_avaliacoes
+        return id_beneficios
