@@ -1,40 +1,40 @@
 
-class SetoresRepository():
+class AvaliacoesRepository():
     
     def __init__(self, conn_factory):
         self.conn_factory = conn_factory
 
-    def create(self, nome, id_gerente = None):
+    def create(self, id_funcionario, data_avaliacao, nota):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                INSERT INTO setores (nome, id_gerente)
-                VALUES (%s, %s)
+                INSERT INTO avalacoes (id_funcionario, data_avaliacao, nota)
+                VALUES (%s, %s, %s)
                 RETURNING id;
         """
 
-        cur.execute(query, (nome, id_gerente))
+        cur.execute(query, (id_funcionario, data_avaliacao, nota))
         setor_id = cur.fetchone()[0]
 
         cur.close()
         conn.close()
         return setor_id
     
-    def get_by_id(self, id_setor):
+    def get_by_id(self, id_avaliacoes):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, id_gerente FROM setores
+                SELECT id, id_funcionario, data_avaliacao, nota FROM avaliacoes
                 WHERE id = (%s);
         """
 
-        cur.execute(query, (id_setor))
+        cur.execute(query, (id_avaliacoes))
         row = cur.fetchone()
 
         cur.close()
@@ -43,20 +43,21 @@ class SetoresRepository():
         if row:
             return{
                 "id" : row[0],
-                "nome" : row[1],
-                "id_gerente" : row[2]
+                "id_funcionario" : row[1],
+                "data_avaliacao" : row[2],
+                "nota" : row[3]
             }
 
         return None
 
-    def geta_all(self):
+    def get_all(self):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, id_gerente FROM setores;
+                SELECT id, id_funcionario, data_avaliacao, nota FROM avaliacoes;
         """
 
         cur.execute(query)
@@ -66,11 +67,11 @@ class SetoresRepository():
         conn.close()
 
         return [
-            {"id" : r[0], "nome": r[1], "id_gerente" : r[2]}
+            {"id" : r[0], "id_funcionario": r[1], "data_avaliacao" : r[2], "nota" : r[3]}
             for r in rows
         ]
 
-    def update(self,  id_setor, nome = None, id_gerente = None):
+    def update(self,  id_avaliacoes, id_funcionario = None, nota = None):
 
         conn = self.conn_factory()
         
@@ -79,15 +80,15 @@ class SetoresRepository():
         fields = []
         values = []
 
-        if nome is not None:
+        if id_funcionario is not None:
 
-            fields.append("nome = %s")
-            values.append(nome)
+            fields.append("id_funcionario = %s")
+            values.append(id_funcionario)
         
-        if id_gerente is not None:
+        if nota is not None:
 
-            fields.append("id_gerente = %s")
-            values.append(id_gerente)
+            fields.append("nota = %s")
+            values.append(nota)
 
         if not fields:
             
@@ -96,12 +97,12 @@ class SetoresRepository():
             return False
 
         query = f"""
-                UPDATE setores
+                UPDATE avaliacoes
                 SET {','.join(fields) }
                 WHERE id = %s;
         """
 
-        values.append(id_setor)
+        values.append(id_avaliacoes)
         cur.execute(query, values)
 
         cur.close()
@@ -109,19 +110,19 @@ class SetoresRepository():
         return True
 
 
-    def delete(self, id_setor):
+    def delete(self, id_avaliacoes):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                DELETE FROM setores
+                DELETE FROM avaliacoes
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_setor))
+        cur.execute(query, (id_avaliacoes))
 
         cur.close()
         conn.close()
-        return id_setor
+        return id_avaliacoes
