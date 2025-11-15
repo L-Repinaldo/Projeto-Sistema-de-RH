@@ -1,40 +1,40 @@
 
-class BeneficiosRepository():
+class BeneficioFuncionarioRepository():
     
     def __init__(self, conn_factory):
         self.conn_factory = conn_factory
 
-    def create(self, nome):
+    def create(self, id_funcionario, id_beneficio, ativo):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                INSERT INTO beneficios (nome)
-                VALUES (%s)
+                INSERT INTO beneficio_funcionario (id_funcionario, id_beneficio, ativo)
+                VALUES (%s, %s, %s)
                 RETURNING id;
         """
 
-        cur.execute(query, (nome))
-        setor_id = cur.fetchone()[0]
+        cur.execute(query, (id_funcionario, id_beneficio, ativo))
+        id_beneficio_funcionario = cur.fetchone()[0]
 
         cur.close()
         conn.close()
-        return setor_id
+        return id_beneficio_funcionario
     
-    def get_by_id(self, id_beneficios):
+    def get_by_id(self, id_beneficio_funcionario):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome FROM beneficios
+                SELECT id, id_funcionario FROM beneficio_funcionario
                 WHERE id = (%s);
         """
 
-        cur.execute(query, (id_beneficios))
+        cur.execute(query, (id_beneficio_funcionario))
         row = cur.fetchone()
 
         cur.close()
@@ -43,7 +43,9 @@ class BeneficiosRepository():
         if row:
             return{
                 "id" : row[0],
-                "nome" : row[1]
+                "id_funcionario" : row[1],
+                "id_beneficio" : row[2],
+                "ativo" : row[3]
             }
 
         return None
@@ -55,7 +57,7 @@ class BeneficiosRepository():
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome FROM beneficios;
+                SELECT id, id_funcionario, id_beneficio, ativo FROM beneficio_funcionario;
         """
 
         cur.execute(query)
@@ -65,11 +67,11 @@ class BeneficiosRepository():
         conn.close()
 
         return [
-            {"id" : r[0], "nome": r[1] }
+            {"id" : r[0], "id_funcionario": r[1], "id_benefico" : r[2], "ativo" : r[3] }
             for r in rows
         ]
 
-    def update(self,  id_beneficios, nome = None):
+    def update(self,  id_beneficio_funcionario, id_funcionario = None, ativo = None ):
 
         conn = self.conn_factory()
         
@@ -78,10 +80,15 @@ class BeneficiosRepository():
         fields = []
         values = []
         
-        if nome is not None:
+        if id_funcionario is not None:
 
-            fields.append("nome = %s")
-            values.append(nome)
+            fields.append("id_funcionario = %s")
+            values.append(id_funcionario)
+
+        if ativo is not None:
+
+            fields.append("ativo = %s")
+            values.append(ativo)
 
         if not fields:
             
@@ -90,12 +97,12 @@ class BeneficiosRepository():
             return False
 
         query = f"""
-                UPDATE beneficios
+                UPDATE beneficio_funcionario
                 SET {','.join(fields) }
                 WHERE id = %s;
         """
 
-        values.append(id_beneficios)
+        values.append(id_beneficio_funcionario)
         cur.execute(query, values)
 
         cur.close()
@@ -103,19 +110,19 @@ class BeneficiosRepository():
         return True
 
 
-    def delete(self, id_beneficios):
+    def delete(self, id_beneficio_funcionario):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                DELETE FROM beneficios
+                DELETE FROM beneficio_funcionario
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_beneficios))
+        cur.execute(query, (id_beneficio_funcionario))
 
         cur.close()
         conn.close()
-        return id_beneficios
+        return id_beneficio_funcionario
