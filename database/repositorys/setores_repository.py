@@ -2,9 +2,9 @@
 class SetoresRepository():
     
     def __init__(self, conn_factory):
-        self.conn_factory = con_factory
+        self.conn_factory = conn_factory
 
-    def create(self, nome, id_gerente = NONE):
+    def create(self, nome, id_gerente = None):
 
         conn = self.conn_factory()
         
@@ -70,7 +70,7 @@ class SetoresRepository():
             for r in rows
         ]
 
-    def update(self, id_setor):
+    def update(self,  id_setor, nome = None, id_gerente = None):
 
         conn = self.conn_factory()
         
@@ -86,7 +86,7 @@ class SetoresRepository():
         
         if id_gerente is not None:
 
-            filds.append("id_gerente = %s")
+            fields.append("id_gerente = %s")
             values.append(id_gerente)
 
         if not fields:
@@ -124,4 +124,4 @@ class SetoresRepository():
 
         cur.close()
         conn.close()
-        return setor_id
+        return id_setor
