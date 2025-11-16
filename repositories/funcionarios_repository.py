@@ -1,6 +1,6 @@
 from config.connection import db_connection
 
-class FuncionariosRepository():
+class FuncionariosRepository:
     
     def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
@@ -187,6 +187,73 @@ class FuncionariosRepository():
         """
 
         cur.execute(query, (nome, sobrenome))
+        row = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if row:
+            return{
+                "id" : row[0],
+                "nome" : row[1],
+                "sobrenome" : row[2],
+                "cpf" : row[3],
+                "email" : row[4],
+                "id_setor" : row[5],
+                "cargo" : row[6],
+                "faixa_salarial" : row[7],
+                "data_nascimento" : row[8],
+                "data_admissao" : row[9] 
+            }
+
+        return None
+    
+    def get_by_cpf(self, cpf):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, nome, sobrenome, cpf, email, id_setor, cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
+                WHERE cpf = (%s);
+        """
+
+        cur.execute(query, (cpf))
+        row = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if row:
+            return{
+                "id" : row[0],
+                "nome" : row[1],
+                "sobrenome" : row[2],
+                "cpf" : row[3],
+                "email" : row[4],
+                "id_setor" : row[5],
+                "cargo" : row[6],
+                "faixa_salarial" : row[7],
+                "data_nascimento" : row[8],
+                "data_admissao" : row[9] 
+            }
+
+        return None
+    
+
+    def get_by_email(self, email):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, nome, sobrenome, cpf, email, id_setor, cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
+                WHERE email = (%s);
+        """
+
+        cur.execute(query, (email))
         row = cur.fetchone()
 
         cur.close()

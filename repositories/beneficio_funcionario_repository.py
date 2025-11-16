@@ -1,6 +1,6 @@
 from config.connection import db_connection
 
-class BeneficioFuncionarioRepository():
+class BeneficioFuncionarioRepository:
     
     def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
