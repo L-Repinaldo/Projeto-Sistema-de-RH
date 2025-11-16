@@ -49,7 +49,7 @@ class SetoresRepository():
 
         return None
 
-    def geta_all(self):
+    def get_all(self):
 
         conn = self.conn_factory()
         
