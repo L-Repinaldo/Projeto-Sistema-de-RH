@@ -1,10 +1,10 @@
-from repositories import SetoresRepository as repository, FuncionariosRepository as funcionario_repo
+from repositories import SetoresRepository , FuncionariosRepository
 
 class SetoresService:
 
-    def __init__(self, repository = repository(), funcionario_repo = funcionario_repo() ):
-        self.repository = repository
-        self.funcionario_repo = funcionario_repo
+    def __init__(self, repository = None , funcionario_repo = None ):
+        self.repository = repository or SetoresRepository()
+        self.funcionario_repo = funcionario_repo or FuncionariosRepository()
 
     
     def create(self, nome, id_gerente = None):
@@ -22,8 +22,8 @@ class SetoresService:
             
         return self.repository.create(nome = nome, id_gerente = id_gerente)
     
-    def get_by_nome(self, nome):
-        setor = self.repository.get_by_nome(nome = nome)
+    def get_by_name(self, nome):
+        setor = self.repository.get_by_name(nome = nome)
 
         if not setor:
             raise ValueError("Setor não encontrado")
@@ -41,8 +41,10 @@ class SetoresService:
         if not setor:
             raise ValueError("Setor não encontrado")
         
-        if nome and self.repository.get_by_name(nome= nome):
-            raise ValueError("Já existe outro setor com esse nome.")
+        if nome:
+            setor_com_nome = self.repository.get_by_name(nome=nome)
+            if setor_com_nome and setor_com_nome["id"] != id_setor:
+                raise ValueError("Já existe outro setor com esse nome.")
         
         if id_gerente is not None:
 
@@ -54,7 +56,7 @@ class SetoresService:
                 raise ValueError("Este gerente já gerencia outro setor.")
         
 
-        return repository.update(id_setor, nome = nome , id_gerente = id_gerente)
+        return self.repository.update(id_setor = id_setor, nome = nome , id_gerente = id_gerente)
             
     def delete(self, id_setor):
 
