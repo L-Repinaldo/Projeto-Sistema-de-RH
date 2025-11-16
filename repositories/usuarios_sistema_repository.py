@@ -1,40 +1,41 @@
+from config.connection import db_connection
 
-class AvaliacoesRepository():
+class UsuariosSistemaRepository():
     
-    def __init__(self, conn_factory):
+    def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
 
-    def create(self, id_funcionario, data_avaliacao, nota):
+    def create(self, username, password, role, id_funcionario = None):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                INSERT INTO avaliacoes (id_funcionario, data_avaliacao, nota)
+                INSERT INTO usuarios_sistema (id_funcionario, username, password, role)
                 VALUES (%s, %s, %s)
                 RETURNING id;
         """
 
-        cur.execute(query, (id_funcionario, data_avaliacao, nota))
-        setor_id = cur.fetchone()[0]
+        cur.execute(query, (id_funcionario, username, password, role))
+        id_usuarios_sistema = cur.fetchone()[0]
 
         cur.close()
         conn.close()
-        return setor_id
+        return id_usuarios_sistema
     
-    def get_by_id(self, id_avaliacoes):
+    def get_by_id(self, id_usuarios_sistema):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_funcionario, data_avaliacao, nota FROM avaliacoes
+                SELECT id, id_funcionario FROM usuarios_sistema
                 WHERE id = (%s);
         """
 
-        cur.execute(query, (id_avaliacoes))
+        cur.execute(query, (id_usuarios_sistema))
         row = cur.fetchone()
 
         cur.close()
@@ -44,8 +45,9 @@ class AvaliacoesRepository():
             return{
                 "id" : row[0],
                 "id_funcionario" : row[1],
-                "data_avaliacao" : row[2],
-                "nota" : row[3]
+                "username" : row[2],
+                "password" : row[3],
+                "role" : row[4]
             }
 
         return None
@@ -57,7 +59,7 @@ class AvaliacoesRepository():
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_funcionario, data_avaliacao, nota FROM avaliacoes;
+                SELECT id, id_funcionario, username, password, role FROM usuarios_sistema;
         """
 
         cur.execute(query)
@@ -67,11 +69,11 @@ class AvaliacoesRepository():
         conn.close()
 
         return [
-            {"id" : r[0], "id_funcionario": r[1], "data_avaliacao" : r[2], "nota" : r[3]}
+            {"id" : r[0], "id_funcionario": r[1], "username" : r[2], "password" : r[3], "role" : r[4] }
             for r in rows
         ]
 
-    def update(self,  id_avaliacoes, id_funcionario = None, nota = None):
+    def update(self,  id_usuarios_sistema, id_funcionario = None, username = None, password = None, role = None ):
 
         conn = self.conn_factory()
         
@@ -79,16 +81,26 @@ class AvaliacoesRepository():
 
         fields = []
         values = []
-
+        
         if id_funcionario is not None:
 
             fields.append("id_funcionario = %s")
             values.append(id_funcionario)
-        
-        if nota is not None:
 
-            fields.append("nota = %s")
-            values.append(nota)
+        if password is not None:
+
+            fields.append("password = %s")
+            values.append(password)
+        
+        if username is not None:
+
+            fields.append("username = %s")
+            values.append(username)
+
+        if role is not None:
+
+            fields.append("role = %s")
+            values.append(role)
 
         if not fields:
             
@@ -97,12 +109,12 @@ class AvaliacoesRepository():
             return False
 
         query = f"""
-                UPDATE avaliacoes
+                UPDATE usuarios_sistema
                 SET {','.join(fields) }
                 WHERE id = %s;
         """
 
-        values.append(id_avaliacoes)
+        values.append(id_usuarios_sistema)
         cur.execute(query, values)
 
         cur.close()
@@ -110,19 +122,19 @@ class AvaliacoesRepository():
         return True
 
 
-    def delete(self, id_avaliacoes):
+    def delete(self, id_usuarios_sistema):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                DELETE FROM avaliacoes
+                DELETE FROM usuarios_sistema
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_avaliacoes))
+        cur.execute(query, (id_usuarios_sistema))
 
         cur.close()
         conn.close()
-        return id_avaliacoes
+        return id_usuarios_sistema

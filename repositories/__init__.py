@@ -1,0 +1,7 @@
+from .setores_repository import SetoresRepository
+from .avaliacoes_repository import AvaliacoesRepository
+from .beneficio_funcionario_repository import BeneficioFuncionarioRepository
+from .beneficios_repository import BeneficiosRepository
+from .funcionarios_repository import FuncionariosRepository
+from .usuarios_sistema_repository import UsuariosSistemaRepository
+from .logs_acesso_repository import LogsAcessoRepository

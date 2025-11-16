@@ -1,7 +1,8 @@
+from config.connection import db_connection
 
 class LogsAcessoRepository():
     
-    def __init__(self, conn_factory):
+    def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
 
     def create(self, id_usuario, operacao, consulta, result_count, time_stamp, ip):
