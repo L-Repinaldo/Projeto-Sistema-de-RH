@@ -1,0 +1,6 @@
+{
+    "github.copilot.chat.agent.autoFix": false,
+    "github.copilot.chat.edits.suggestRelatedFilesForTests": false,
+    "github.copilot.chat.edits.suggestRelatedFilesFromGitHistory": false,
+    "github.copilot.chat.imageUpload.enabled": false
+}
