@@ -1,7 +1,8 @@
+from config.connection import db_connection
 
-class BeneficiosRepository():
+class BeneficiosRepository:
     
-    def __init__(self, conn_factory):
+    def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
 
     def create(self, nome):
@@ -119,3 +120,28 @@ class BeneficiosRepository():
         cur.close()
         conn.close()
         return id_beneficios
+
+    def get_by_name(self, nome):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, nome FROM beneficios
+                WHERE nome = (%s);
+        """
+
+        cur.execute(query, (nome))
+        row = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if row:
+            return{
+                "id" : row[0],
+                "nome" : row[1]
+            }
+
+        return None

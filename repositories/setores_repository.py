@@ -1,8 +1,14 @@
+from config.connection import db_connection
 
-class SetoresRepository():
+class SetoresRepository:
     
-    def __init__(self, conn_factory):
+    def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
+
+    #/////////////////////////
+    #CRUD Basico
+    #/////////////////////////
+
 
     def create(self, nome, id_gerente = None):
 
@@ -125,3 +131,60 @@ class SetoresRepository():
         cur.close()
         conn.close()
         return id_setor
+    
+
+    #/////////////////////////
+    #Métodos adicionais
+    #/////////////////////////
+
+    def get_by_name(self, nome):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, nome, id_gerente FROM setores
+                WHERE nome = (%s);
+        """
+
+        cur.execute(query, (nome))
+        row = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if row:
+            return{
+                "id" : row[0],
+                "nome" : row[1],
+                "id_gerente" : row[2]
+            }
+
+        return None
+    
+    def get_by_gerente(self, id_gerente):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, nome, id_gerente FROM setores
+                WHERE id_gerente = (%s);
+        """
+
+        cur.execute(query, (id_gerente))
+        row = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if row:
+            return{
+                "id" : row[0],
+                "nome" : row[1],
+                "id_gerente" : row[2]
+            }
+
+        return None
