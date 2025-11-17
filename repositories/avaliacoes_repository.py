@@ -127,3 +127,86 @@ class AvaliacoesRepository:
         cur.close()
         conn.close()
         return id_avaliacoes
+    
+    def get_by_funcionario(self, id_funcionario):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, id_funcionario, data_avaliacao, nota FROM avaliacoes
+                WHERE id_funcionario = %s;
+        """
+
+        cur.execute(query, (id_funcionario))
+        rows = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return [
+            {"id" : r[0], "id_funcionario": r[1], "data_avaliacao" : r[2], "nota" : r[3]}
+            for r in rows
+        ]
+    
+    def get_by_nota_range(self, nota_minima, nota_maxima):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, id_funcionario, data_avaliacao, nota FROM avaliacoes
+                WHERE nota BETWEEN %s AND %s;
+        """
+
+        cur.execute(query, (nota_minima, nota_maxima))
+        rows = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return [
+            {"id" : r[0], "id_funcionario": r[1], "data_avaliacao" : r[2], "nota" : r[3]}
+            for r in rows
+        ]
+    
+    def get_by_date_range(self, data_inicio, data_fim):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, id_funcionario, data_avaliacao, nota FROM avaliacoes
+                WHERE data_avaliacao BETWEEN %s AND %s;
+        """
+
+        cur.execute(query, (data_inicio, data_fim))
+        rows = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return [
+            {"id" : r[0], "id_funcionario": r[1], "data_avaliacao" : r[2], "nota" : r[3]}
+            for r in rows
+        ]
+    
+    def delete_by_funcionario(self, id_funcionario):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                DELETE FROM avaliacoes
+                WHERE id_funcionario = %s;
+        """
+
+        cur.execute(query, (id_funcionario))
+
+        cur.close()
+        conn.close()
+        return id_funcionario

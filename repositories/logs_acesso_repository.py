@@ -74,6 +74,50 @@ class LogsAcessoRepository:
             {"id" : r[0], "id_usuario" : r[1], "operacao" : r[2], "consulta" : r[3], "result_count": r[4], "time_stamp" : r[5], "ip" : r[6] }
             for r in rows
         ]
+    
+    def get_by_usuario(self, id_usuario):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, id_usuario, operacao, consulta, result_count, time_stamp, ip FROM logs_acesso
+                WHERE id_usuario = (%s);
+        """
+
+        cur.execute(query, (id_usuario))
+        rows = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return [
+            {"id" : r[0], "id_usuario" : r[1], "operacao" : r[2], "consulta" : r[3], "result_count": r[4], "time_stamp" : r[5], "ip" : r[6] }
+            for r in rows
+        ]
+    
+    def get_by_time_range(self, start_time, end_time):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, id_usuario, operacao, consulta, result_count, time_stamp, ip FROM logs_acesso
+                WHERE time_stamp BETWEEN %s AND %s;
+        """
+
+        cur.execute(query, (start_time, end_time))
+        rows = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return [
+            {"id" : r[0], "id_usuario" : r[1], "operacao" : r[2], "consulta" : r[3], "result_count": r[4], "time_stamp" : r[5], "ip" : r[6] }
+            for r in rows
+        ]
 
     #//////////////////////////////////////////////////////////////////////////////////////////////////
     #ESSE REPOSITÓRIO NÃO POSSUI UPDATE, POIS OS LOGS DEVEM SER PERMANENTES E NÃO PODEM SER MODIFICADOS

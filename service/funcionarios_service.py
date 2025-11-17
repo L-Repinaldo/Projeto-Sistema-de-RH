@@ -1,10 +1,13 @@
-from repositories import FuncionariosRepository, SetoresRepository
+from repositories import FuncionariosRepository, SetoresRepository, BeneficioFuncionarioRepository, UsuariosSistemaRepository, AvaliacoesRepository
 
 class FuncionariosService:
     
-    def __init__(self, repository = None , setores_repo = None):
-        self.repository = repository or FuncionariosRepository()
-        self.setores_repo = setores_repo or SetoresRepository()
+    def __init__(self):
+        self.repository = FuncionariosRepository()
+        self.setores_repo = SetoresRepository()
+        self.beneficio_funcionario_repo = BeneficioFuncionarioRepository()
+        self.usuario_sistema_repo = UsuariosSistemaRepository()
+        self.avaliacoes_repo = AvaliacoesRepository()
 
     
     def create(self, nome, sobrenome, cpf, email, id_setor, cargo, faixa_salarial, data_nascimento, data_admissao):
@@ -76,18 +79,21 @@ class FuncionariosService:
             raise ValueError("Setor não encontrado.")
         
         if nome:
-            if self.repository.get_by_nome_completo(
-                nome=nome, sobrenome=funcionario["sobrenome"]
-            ):
-                if nome != funcionario["nome"]:
-                    raise ValueError("Já existe funcionário com esse nome completo.")
+            encontrado = self.repository.get_by_nome_completo(
+                nome=nome,
+                sobrenome=funcionario["sobrenome"]
+            )
+            if encontrado and encontrado["id"] != funcionario_id:
+                raise ValueError("Já existe funcionário com esse nome completo.")
 
         if sobrenome:
-            if self.repository.get_by_nome_completo(
-                nome=funcionario["nome"], sobrenome=sobrenome
-            ):
-                if sobrenome != funcionario["sobrenome"]:
-                    raise ValueError("Já existe funcionário com esse nome completo.")
+            encontrado = self.repository.get_by_nome_completo(
+                nome=funcionario["nome"],
+                sobrenome=sobrenome
+            )
+            if encontrado and encontrado["id"] != funcionario_id:
+                raise ValueError("Já existe funcionário com esse nome completo.")
+
         
         if email:
             existente = self.repository.get_by_email(email=email)
@@ -110,5 +116,17 @@ class FuncionariosService:
 
         if setor_gerenciado:
             self.setores_repo.update(id_setor = setor_gerenciado["id"], id_gerente = None)
+
+        beneficios = self.beneficio_funcionario_repo.get_by_funcionario(id_funcionario = funcionario_id)
+        if beneficios:
+            self.beneficio_funcionario_repo.delete_by_funcionario(id_funcionario= funcionario_id)
+        
+        usuario_cadastro = self.usuario_sistema_repo.get_by_funcionario_id(id_funcionario= funcionario_id)
+        if usuario_cadastro:
+            self.usuario_sistema_repo.delete_by_funcionario_id(id_funcionario= funcionario_id)
+
+        avaliacoes = self.avaliacoes_repo.get_by_funcionario(id_funcionario= funcionario_id)
+        if avaliacoes:
+            self.avaliacoes_repo.delete_by_funcionario(id_funcionario= funcionario_id)
 
         return self.repository.delete(funcionario_id= funcionario_id)

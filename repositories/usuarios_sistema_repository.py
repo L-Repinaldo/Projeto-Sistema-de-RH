@@ -138,3 +138,76 @@ class UsuariosSistemaRepository:
         cur.close()
         conn.close()
         return id_usuarios_sistema
+
+
+
+    def get_by_username(self, username):
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, id_funcionario, username, password, role FROM usuarios_sistema
+                WHERE username = %s;
+        """
+
+        cur.execute(query, (username,))
+        row = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if row:
+            return{
+                "id" : row[0],
+                "id_funcionario" : row[1],
+                "username" : row[2],
+                "password" : row[3],
+                "role" : row[4]
+            }
+
+        return None
+    
+    def get_by_funcionario_id(self, id_funcionario):
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                SELECT id, id_funcionario, username, password, role FROM usuarios_sistema
+                WHERE id_funcionario = %s;
+        """
+
+        cur.execute(query, (id_funcionario,))
+        row = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if row:
+            return{
+                "id" : row[0],
+                "id_funcionario" : row[1],
+                "username" : row[2],
+                "password" : row[3],
+                "role" : row[4]
+            }
+
+        return None
+    
+    def delete_by_funcionario_id(self, id_funcionario):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        query = """
+                DELETE FROM usuarios_sistema
+                WHERE id_funcionario = %s;
+        """
+
+        cur.execute(query, (id_funcionario,))
+
+        cur.close()
+        conn.close()
+        return True
