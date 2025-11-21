@@ -17,7 +17,7 @@ class UsuariosSistemaRepository:
 
         query = """
                 INSERT INTO usuarios_sistema (id_funcionario, username, password, id_permissao)
-                VALUES (%s, %s, %s)
+                VALUES (%s, %s, %s, %s)
                 RETURNING id;
         """
 
@@ -67,7 +67,7 @@ class UsuariosSistemaRepository:
         """
 
         cur.execute(query)
-        rows = cur.fetchall
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()

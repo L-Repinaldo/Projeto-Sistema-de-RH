@@ -1,4 +1,5 @@
 from repositories import UsuariosSistemaRepository, FuncionariosRepository, PermissoesRepository
+from utils import PasswordUtil
 
 class UsuariosService:
     def __init__(self):
@@ -11,7 +12,7 @@ class UsuariosService:
         if self.repository.get_by_username(username):
             raise ValueError("Username já existente")
         
-        #Configurare regras de SEnhas aqui
+        hashed = PasswordUtil.hash_password(raw_password= password)
 
         permissao = self.permissoes_repo.get_by_id(id_permissao= id_permissao)
         if not permissao:
@@ -25,7 +26,7 @@ class UsuariosService:
                 raise ValueError("Funcionario não encontrado")
 
 
-        return self.repository.create(username = username, password = password, id_permissao = id_permissao, id_funcionario = id_funcionario)
+        return self.repository.create(username = username, password = hashed, id_permissao = id_permissao, id_funcionario = id_funcionario)
     
 
     def get_all(self):
@@ -44,8 +45,10 @@ class UsuariosService:
             existing_user = self.repository.get_by_username(username)
             if existing_user and existing_user['id'] != usuario_id:
                 raise ValueError("Username já existente")
-            
-        #Regras de Senha
+        
+        hashed = None
+        if password:
+            hashed = PasswordUtil.hash_password(raw_password= password)
 
         if id_permissao is not None:
             permissao = self.permissoes_repo.get_by_id(id_permissao=id_permissao)
@@ -59,7 +62,7 @@ class UsuariosService:
             if not funcionario:
                 raise ValueError("Funcionario não encontrado")
             
-        return self.repository.update(usuario_id, username= username, password = password, id_permissao = id_permissao, id_funcionario= id_funcionario)
+        return self.repository.update(usuario_id, username= username, password = hashed, id_permissao = id_permissao, id_funcionario= id_funcionario)
 
     def delete(self, usuario_id):
         usuario = self.repository.get_by_id(usuario_id)
@@ -67,3 +70,16 @@ class UsuariosService:
             raise ValueError("Usuario não encontrado")
         
         return self.repository.delete(usuario_id)
+    
+
+    def login(self, username: str, password: str):
+
+        usuario = self.repository.get_by_username(username = username)
+        if not usuario:
+            raise ValueError("Usuário não encontrado")
+        
+        hashed = usuario["password"]
+        if not PasswordUtil.verify_password(raw_password= password, hashed_password= hashed):
+            raise ValueError("Credenciais inválidas")
+        
+        return usuario
