@@ -5,19 +5,23 @@ class LogsAcessoRepository:
     def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
 
-    def create(self, id_usuario, operacao, consulta, result_count, time_stamp, ip):
+    #/////////////////////////
+    #CRUD Basico
+    #/////////////////////////
+
+    def create(self, id_usuario, operacao, consulta, result_count, time_stamp):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                INSERT INTO logs_acesso (id_usuario, operacao, consulta, result_count, time_stamp, ip )
+                INSERT INTO logs_acesso (id_usuario, operacao, consulta, result_count, time_stamp )
                 VALUES (%s, %s, %s, %s, %s)
                 RETURNING id;
         """
 
-        cur.execute(query, ( id_usuario, operacao, consulta, result_count, time_stamp, ip))
+        cur.execute(query, ( id_usuario, operacao, consulta, result_count, time_stamp))
         id_logs_acesso = cur.fetchone()[0]
 
         cur.close()
@@ -31,7 +35,7 @@ class LogsAcessoRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_usuario, operacao, consulta, result_count, time_stamp, ip FROM logs_acesso
+                SELECT id, id_usuario, operacao, consulta, result_count, time_stamp FROM logs_acesso
                 WHERE id = (%s);
         """
 
@@ -48,8 +52,7 @@ class LogsAcessoRepository:
                 "operacao" : row[2],
                 "consulta" : row[3],
                 "result_count" : row[4],
-                "time_stamp" : row[5],
-                "ip" : row[6]
+                "time_stamp" : row[5]
             }
 
         return None
@@ -61,7 +64,7 @@ class LogsAcessoRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_usuario, operacao, consulta, result_count, time_stamp, ip FROM logs_acesso;
+                SELECT id, id_usuario, operacao, consulta, result_count, time_stamp FROM logs_acesso;
         """
 
         cur.execute(query)
@@ -71,10 +74,25 @@ class LogsAcessoRepository:
         conn.close()
 
         return [
-            {"id" : r[0], "id_usuario" : r[1], "operacao" : r[2], "consulta" : r[3], "result_count": r[4], "time_stamp" : r[5], "ip" : r[6] }
+            {"id" : r[0], "id_usuario" : r[1], "operacao" : r[2], "consulta" : r[3], "result_count": r[4], "time_stamp" : r[5] }
             for r in rows
         ]
     
+
+
+    #//////////////////////////////////////////////////////////////////////////////////////////////////
+    #ESSE REPOSITÓRIO NÃO POSSUI UPDATE, POIS OS LOGS DEVEM SER PERMANENTES E NÃO PODEM SER MODIFICADOS
+    #//////////////////////////////////////////////////////////////////////////////////////////////////
+
+    #//////////////////////////////////////////////////////////////////////////////////////////////////
+    #ESSE REPOSITÓRIO NÃO POSSUI UPDATE, POIS OS LOGS DEVEM SER PERMANENTES E NÃO PODEM SER MODIFICADOS
+    #//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    #/////////////////////////
+    #Métodos adicionais
+    #/////////////////////////
+      
     def get_by_usuario(self, id_usuario):
 
         conn = self.conn_factory()
@@ -82,7 +100,7 @@ class LogsAcessoRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_usuario, operacao, consulta, result_count, time_stamp, ip FROM logs_acesso
+                SELECT id, id_usuario, operacao, consulta, result_count, time_stamp FROM logs_acesso
                 WHERE id_usuario = (%s);
         """
 
@@ -93,7 +111,7 @@ class LogsAcessoRepository:
         conn.close()
 
         return [
-            {"id" : r[0], "id_usuario" : r[1], "operacao" : r[2], "consulta" : r[3], "result_count": r[4], "time_stamp" : r[5], "ip" : r[6] }
+            {"id" : r[0], "id_usuario" : r[1], "operacao" : r[2], "consulta" : r[3], "result_count": r[4], "time_stamp" : r[5]}
             for r in rows
         ]
     
@@ -104,7 +122,7 @@ class LogsAcessoRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_usuario, operacao, consulta, result_count, time_stamp, ip FROM logs_acesso
+                SELECT id, id_usuario, operacao, consulta, result_count, time_stamp FROM logs_acesso
                 WHERE time_stamp BETWEEN %s AND %s;
         """
 
@@ -115,14 +133,7 @@ class LogsAcessoRepository:
         conn.close()
 
         return [
-            {"id" : r[0], "id_usuario" : r[1], "operacao" : r[2], "consulta" : r[3], "result_count": r[4], "time_stamp" : r[5], "ip" : r[6] }
+            {"id" : r[0], "id_usuario" : r[1], "operacao" : r[2], "consulta" : r[3], "result_count": r[4], "time_stamp" : r[5]}
             for r in rows
         ]
 
-    #//////////////////////////////////////////////////////////////////////////////////////////////////
-    #ESSE REPOSITÓRIO NÃO POSSUI UPDATE, POIS OS LOGS DEVEM SER PERMANENTES E NÃO PODEM SER MODIFICADOS
-    #//////////////////////////////////////////////////////////////////////////////////////////////////
-
-    #//////////////////////////////////////////////////////////////////////////////////////////////////
-    #ESSE REPOSITÓRIO NÃO POSSUI UPDATE, POIS OS LOGS DEVEM SER PERMANENTES E NÃO PODEM SER MODIFICADOS
-    #//////////////////////////////////////////////////////////////////////////////////////////////////

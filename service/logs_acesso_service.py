@@ -7,12 +7,10 @@ class LogsAcessoService:
         self.repository = LogsAcessoRepository()
         self.usuarios_repo = UsuariosSistemaRepository()
 
-    def create(self, id_usuario, operacao, consulta, result_count, time_stamp=None, ip=None ):
+    def create(self, id_usuario, operacao, consulta, result_count, time_stamp=None ):
 
         time_stamp = time_stamp or datetime.datetime.now()
 
-        #Configurar ip
-        
         if not self.usuarios_repo.get_by_id(id_usuario= id_usuario):
             raise ValueError("Usuário não encontrado.")
         
@@ -26,7 +24,7 @@ class LogsAcessoService:
             raise ValueError("result_count deve ser um inteiro maior ou igual a 0.")
         
         return self.repository.create( id_usuario= id_usuario, operacao= operacao, consulta= consulta,
-                                       result_count= result_count, time_stamp= time_stamp, ip= ip)
+                                       result_count= result_count, time_stamp= time_stamp )
     
     def get_all(self):
 
