@@ -5,19 +5,23 @@ class UsuariosSistemaRepository:
     def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
 
-    def create(self, username, password, role, id_funcionario = None):
+    #/////////////////////////
+    #CRUD Basico
+    #/////////////////////////
+
+    def create(self, username, password, id_permissao, id_funcionario = None):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                INSERT INTO usuarios_sistema (id_funcionario, username, password, role)
+                INSERT INTO usuarios_sistema (id_funcionario, username, password, id_permissao)
                 VALUES (%s, %s, %s)
                 RETURNING id;
         """
 
-        cur.execute(query, (id_funcionario, username, password, role))
+        cur.execute(query, (id_funcionario, username, password, id_permissao))
         id_usuarios_sistema = cur.fetchone()[0]
 
         cur.close()
@@ -31,7 +35,7 @@ class UsuariosSistemaRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_funcionario FROM usuarios_sistema
+                SELECT id, id_funcionario, username, password, id_permissao FROM usuarios_sistema
                 WHERE id = (%s);
         """
 
@@ -47,7 +51,7 @@ class UsuariosSistemaRepository:
                 "id_funcionario" : row[1],
                 "username" : row[2],
                 "password" : row[3],
-                "role" : row[4]
+                "id_permissao" : row[4]
             }
 
         return None
@@ -59,7 +63,7 @@ class UsuariosSistemaRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_funcionario, username, password, role FROM usuarios_sistema;
+                SELECT id, id_funcionario, username, password, id_permissao FROM usuarios_sistema;
         """
 
         cur.execute(query)
@@ -69,11 +73,11 @@ class UsuariosSistemaRepository:
         conn.close()
 
         return [
-            {"id" : r[0], "id_funcionario": r[1], "username" : r[2], "password" : r[3], "role" : r[4] }
+            {"id" : r[0], "id_funcionario": r[1], "username" : r[2], "password" : r[3], "id_permissao" : r[4] }
             for r in rows
         ]
 
-    def update(self,  id_usuarios_sistema, id_funcionario = None, username = None, password = None, role = None ):
+    def update(self,  id_usuarios_sistema, id_funcionario = None, username = None, password = None, id_permissao = None ):
 
         conn = self.conn_factory()
         
@@ -97,10 +101,10 @@ class UsuariosSistemaRepository:
             fields.append("username = %s")
             values.append(username)
 
-        if role is not None:
+        if id_permissao is not None:
 
-            fields.append("role = %s")
-            values.append(role)
+            fields.append("id_permissao = %s")
+            values.append(id_permissao)
 
         if not fields:
             
@@ -138,6 +142,10 @@ class UsuariosSistemaRepository:
         cur.close()
         conn.close()
         return id_usuarios_sistema
+    
+    #/////////////////////////
+    #Métodos adicionais
+    #/////////////////////////
 
 
 
@@ -147,7 +155,7 @@ class UsuariosSistemaRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_funcionario, username, password, role FROM usuarios_sistema
+                SELECT id, id_funcionario, username, password, id_permissao FROM usuarios_sistema
                 WHERE username = %s;
         """
 
@@ -163,7 +171,7 @@ class UsuariosSistemaRepository:
                 "id_funcionario" : row[1],
                 "username" : row[2],
                 "password" : row[3],
-                "role" : row[4]
+                "id_permissao" : row[4]
             }
 
         return None
@@ -174,7 +182,7 @@ class UsuariosSistemaRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_funcionario, username, password, role FROM usuarios_sistema
+                SELECT id, id_funcionario, username, password, id_permissao FROM usuarios_sistema
                 WHERE id_funcionario = %s;
         """
 
@@ -190,7 +198,7 @@ class UsuariosSistemaRepository:
                 "id_funcionario" : row[1],
                 "username" : row[2],
                 "password" : row[3],
-                "role" : row[4]
+                "id_permissao" : row[4]
             }
 
         return None

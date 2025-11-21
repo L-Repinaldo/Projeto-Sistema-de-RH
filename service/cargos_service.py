@@ -1,9 +1,10 @@
-from repositories import CargosRepository
+from repositories import CargosRepository, FuncionariosRepository
 
 class CargosService:
 
     def __init__(self):
         self.repository = CargosRepository()
+        self.funcionarios_repo = FuncionariosRepository()
     
     def create(self, nome):
 
@@ -45,9 +46,25 @@ class CargosService:
     def desactivate(self, id_cargo):
 
         cargo = self.repository.get_by_id(id_cargo= id_cargo)
-
         if not cargo:
             raise ValueError("Cargo não encontrado.")
+        if cargo['ativo'] == False:
+            raise ValueError("Cargo já desativado")
+        
+        funcionarios_ativos = self.funcionarios_repo.get_by_cargo(id_cargo= id_cargo)
+        if funcionarios_ativos:
+            raise  ValueError("Não é possível desativar cargos com funcionários ativos.")
         
         self.repository.desactivate(id_cargo= id_cargo)
         return True
+    
+    def activate(self, id_cargo):
+
+        cargo = self.repository.get_by_id(id_cargo = id_cargo)
+        if not cargo:
+            raise ValueError("Cargo não encontrado.")
+        
+        if cargo['ativo'] == True:
+            raise ValueError("Cargo já ativado")
+                
+        return self.repository.activate(id_cargo= id_cargo)

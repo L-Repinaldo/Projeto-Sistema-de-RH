@@ -5,6 +5,11 @@ class BeneficioFuncionarioRepository:
     def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
 
+
+    #/////////////////////////
+    #CRUD Basico
+    #/////////////////////////
+
     def create(self, id_funcionario, id_beneficio, ativo):
 
         conn = self.conn_factory()
@@ -122,6 +127,10 @@ class BeneficioFuncionarioRepository:
         cur.close()
         conn.close()
         return id_beneficio_funcionario
+
+    #/////////////////////////
+    #Métodos adicionais
+    #/////////////////////////
 
     def get_by_funcionario(self, id_funcionario):
 

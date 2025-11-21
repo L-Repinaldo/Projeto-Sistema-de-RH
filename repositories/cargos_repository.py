@@ -12,7 +12,7 @@ class CargosRepository:
         cur = conn.cursor()
 
         query = """
-                INSERT INTO cargos (nome, ativo)
+                INSERT INTO cargos (nome)
                 VALUES (%s)
                 RETURNING id;
         """
@@ -61,7 +61,7 @@ class CargosRepository:
                 WHERE nome = (%s);
         """
 
-        cur.execute(query, (nome,))
+        cur.execute(query, (nome))
         row = cur.fetchone()
 
         cur.close()
@@ -97,7 +97,7 @@ class CargosRepository:
             for r in rows
         ]
     
-    def update(self,  id_cargo, nome = None):
+    def update(self,  id_cargo, nome):
 
         conn = self.conn_factory()
         
@@ -130,7 +130,25 @@ class CargosRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_cargo,))
+        cur.execute(query, (id_cargo))
+        conn.commit()
+
+        cur.close()
+        conn.close()
+        return True
+    
+    def activate(self, id_cargo):
+
+        conn = self.conn_factory()
+
+        cur = conn.cursor()
+
+        query = """
+                UPDATE cargos
+                SET ativo = TRUE
+                WHERE id = %s;
+        """
+        cur.execute(query, (id_cargo))
         conn.commit()
 
         cur.close()

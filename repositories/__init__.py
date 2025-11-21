@@ -6,3 +6,4 @@ from .funcionarios_repository import FuncionariosRepository
 from .usuarios_sistema_repository import UsuariosSistemaRepository
 from .logs_acesso_repository import LogsAcessoRepository
 from .cargos_repository import CargosRepository
+from .permissoes_repository import PermissoesRepository
