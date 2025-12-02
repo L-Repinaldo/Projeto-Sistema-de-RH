@@ -9,19 +9,19 @@ class FuncionariosRepository:
     #CRUD Basico
     #/////////////////////////
 
-    def create(self, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao):
+    def create(self, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                INSERT INTO funcionarios (nome, sobrenome, cpf, email, id_cargo, faixa_salarial, data_nascimento, data_admissao)
+                INSERT INTO funcionarios (nome, sobrenome, cpf, email, id_cargo, salario, data_nascimento, data_admissao)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id;
         """
 
-        cur.execute(query, (nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao))
+        cur.execute(query, (nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao))
         funcionario_id = cur.fetchone()[0]
 
         cur.close()
@@ -36,7 +36,7 @@ class FuncionariosRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
+                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
                 WHERE id = (%s);
         """
 
@@ -55,7 +55,7 @@ class FuncionariosRepository:
                 "email" : row[4],
                 "id_setor" : row[5],
                 "id_cargo" : row[6],
-                "faixa_salarial" : row[7],
+                "salario" : row[7],
                 "data_nascimento" : row[8],
                 "data_admissao" : row[9] 
             }
@@ -69,7 +69,7 @@ class FuncionariosRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios;
+                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios;
         """
 
         cur.execute(query)
@@ -87,14 +87,14 @@ class FuncionariosRepository:
                 "email" : r[4],
                 "id_setor" : r[5],
                 "id_cargo" : r[6],
-                "faixa_salarial" : r[7],
+                "salario" : r[7],
                 "data_nascimento" : r[8],
                 "data_admissao" : r[9] 
             }
             for r in rows
         ]
 
-    def update(self,  funcionario_id, nome = None, sobrenome = None, email = None, id_setor = None, id_cargo = None, faixa_salarial = None):
+    def update(self,  funcionario_id, nome = None, sobrenome = None, email = None, id_setor = None, id_cargo = None, salario = None):
 
         conn = self.conn_factory()
         
@@ -128,10 +128,10 @@ class FuncionariosRepository:
             fields.append("id_cargo = %s")
             values.append(id_cargo)
 
-        if faixa_salarial is not None:
+        if salario is not None:
 
-            fields.append("faixa_salarial = %s")
-            values.append(faixa_salarial)
+            fields.append("salario = %s")
+            values.append(salario)
 
         if not fields:
             
@@ -182,7 +182,7 @@ class FuncionariosRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
+                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
                 WHERE nome AND sobrenome = (%s, %s);
         """
 
@@ -201,7 +201,7 @@ class FuncionariosRepository:
                 "email" : row[4],
                 "id_setor" : row[5],
                 "id_cargo" : row[6],
-                "faixa_salarial" : row[7],
+                "salario" : row[7],
                 "data_nascimento" : row[8],
                 "data_admissao" : row[9] 
             }
@@ -215,7 +215,7 @@ class FuncionariosRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
+                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
                 WHERE cpf = (%s);
         """
 
@@ -234,7 +234,7 @@ class FuncionariosRepository:
                 "email" : row[4],
                 "id_setor" : row[5],
                 "id_cargo" : row[6],
-                "faixa_salarial" : row[7],
+                "salario" : row[7],
                 "data_nascimento" : row[8],
                 "data_admissao" : row[9] 
             }
@@ -249,7 +249,7 @@ class FuncionariosRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
+                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
                 WHERE email = (%s);
         """
 
@@ -268,7 +268,7 @@ class FuncionariosRepository:
                 "email" : row[4],
                 "id_setor" : row[5],
                 "id_cargo" : row[6],
-                "faixa_salarial" : row[7],
+                "salario" : row[7],
                 "data_nascimento" : row[8],
                 "data_admissao" : row[9] 
             }
@@ -282,7 +282,7 @@ class FuncionariosRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
+                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
                 WHERE nome = (%s);
         """
 
@@ -301,7 +301,7 @@ class FuncionariosRepository:
                 "email" : r[4],
                 "id_setor" : r[5],
                 "id_cargo" : r[6],
-                "faixa_salarial" : r[7],
+                "salario" : r[7],
                 "data_nascimento" : r[8],
                 "data_admissao" : r[9] 
             }
@@ -316,7 +316,7 @@ class FuncionariosRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
+                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
                 WHERE sobrenome = (%s);
         """
 
@@ -335,7 +335,7 @@ class FuncionariosRepository:
                 "email" : r[4],
                 "id_setor" : r[5],
                 "id_cargo" : r[6],
-                "faixa_salarial" : r[7],
+                "salario" : r[7],
                 "data_nascimento" : r[8],
                 "data_admissao" : r[9] 
             }
@@ -350,7 +350,7 @@ class FuncionariosRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
+                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
                 WHERE id_cargo = (%s);
         """
 
@@ -369,7 +369,7 @@ class FuncionariosRepository:
                 "email" : r[4],
                 "id_setor" : r[5],
                 "id_cargo" : r[6],
-                "faixa_salarial" : r[7],
+                "salario" : r[7],
                 "data_nascimento" : r[8],
                 "data_admissao" : r[9] 
             }
@@ -384,7 +384,7 @@ class FuncionariosRepository:
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
+                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
                 WHERE id_setor = (%s);
         """
 
@@ -403,25 +403,25 @@ class FuncionariosRepository:
                 "email" : r[4],
                 "id_setor" : r[5],
                 "id_cargo" : r[6],
-                "faixa_salarial" : r[7],
+                "salario" : r[7],
                 "data_nascimento" : r[8],
                 "data_admissao" : r[9] 
             }
             for r in rows
         ]
 
-    def get_by_faixa_salarial(self, faixa_salarial):
+    def get_by_salario(self, salario):
 
         conn = self.conn_factory()
         
         cur = conn.cursor()
 
         query = """
-                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao FROM funcionarios
-                WHERE faixa_salarial = (%s);
+                SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
+                WHERE salario = (%s);
         """
 
-        cur.execute(query, (faixa_salarial))
+        cur.execute(query, (salario))
         rows = cur.fetchall
 
         cur.close()
@@ -436,7 +436,7 @@ class FuncionariosRepository:
                 "email" : r[4],
                 "id_setor" : r[5],
                 "id_cargo" : r[6],
-                "faixa_salarial" : r[7],
+                "salario" : r[7],
                 "data_nascimento" : r[8],
                 "data_admissao" : r[9] 
             }

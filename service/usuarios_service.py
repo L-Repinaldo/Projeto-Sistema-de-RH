@@ -7,7 +7,7 @@ class UsuariosService:
         self.funcionarios_repo = FuncionariosRepository()
         self.permissoes_repo =  PermissoesRepository()
 
-    def create_usuario(self, username, password, id_permissao, id_funcionario = None):
+    def create(self, username, password, id_permissao, id_funcionario = None):
 
         if self.repository.get_by_username(username):
             raise ValueError("Username já existente")
