@@ -1,13 +1,14 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from service import BeneficiosFuncionariosService
 from schemas import BeneficioFuncionarioCreate, BeneficioFuncionarioUpdate, BeneficioFuncionarioResponse
 from typing import List
+from utils import require_rh_or_admin
 
 router = APIRouter(prefix="/beneficios-funcionarios", tags=["BeneficiosFuncionarios"])
 service = BeneficiosFuncionariosService()
 
 @router.post("/", response_model=BeneficioFuncionarioResponse)
-def create(data: BeneficioFuncionarioCreate):
+def create(data: BeneficioFuncionarioCreate, current_user: dict = Depends(require_rh_or_admin)):
     try:
         beneficio_funcionario_id = service.create(funcionario_id=data.id_funcionario, beneficio_id=data.id_beneficio, ativo=data.ativo)
         beneficio_funcionario = service.repository.get_by_id(beneficio_funcionario_id)
@@ -16,7 +17,7 @@ def create(data: BeneficioFuncionarioCreate):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/", response_model=List[BeneficioFuncionarioResponse])
-def get_all():
+def get_all(current_user: dict = Depends(require_rh_or_admin)):
     try:
         beneficios_funcionarios = service.get_all()
         return beneficios_funcionarios
@@ -24,7 +25,7 @@ def get_all():
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/{beneficio_funcionario_id}", response_model=BeneficioFuncionarioResponse)
-def get_by_id(beneficio_funcionario_id: int):
+def get_by_id(beneficio_funcionario_id: int, current_user: dict = Depends(require_rh_or_admin)):
     try:
         beneficio_funcionario = service.repository.get_by_id(beneficio_funcionario_id)
         if not beneficio_funcionario:
@@ -34,7 +35,7 @@ def get_by_id(beneficio_funcionario_id: int):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.put("/{beneficio_funcionario_id}", response_model=BeneficioFuncionarioResponse)
-def update(beneficio_funcionario_id: int, data: BeneficioFuncionarioUpdate):
+def update(beneficio_funcionario_id: int, data: BeneficioFuncionarioUpdate, current_user: dict = Depends(require_rh_or_admin)):
     try:
         service.update(id_beneficio_funcionario=beneficio_funcionario_id, ativo=data.ativo)
         beneficio_funcionario = service.repository.get_by_id(beneficio_funcionario_id)
@@ -43,7 +44,7 @@ def update(beneficio_funcionario_id: int, data: BeneficioFuncionarioUpdate):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/{beneficio_funcionario_id}")
-def delete(beneficio_funcionario_id: int):
+def delete(beneficio_funcionario_id: int, current_user: dict = Depends(require_rh_or_admin)):
     try:
         service.delete(beneficio_funcionario_id)
         return {"message": "BeneficioFuncionario deletado com sucesso"}

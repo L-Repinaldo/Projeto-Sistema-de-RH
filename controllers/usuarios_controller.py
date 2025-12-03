@@ -3,6 +3,7 @@ from service import UsuariosService
 from schemas import  UsuarioCreate, UsuarioUpdate, UsuarioResponse
 from typing import List
 from pydantic import BaseModel
+from utils import require_admin
 
 class LoginRequest(BaseModel):
     username: str
@@ -14,7 +15,7 @@ router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 service = UsuariosService()
 
 @router.post("/", response_model = UsuarioResponse)
-def create(data : UsuarioCreate):
+def create(data : UsuarioCreate, current_user: dict = Depends(require_admin)):
     try:
 
         user_id =  service.create(
@@ -32,7 +33,7 @@ def create(data : UsuarioCreate):
         raise HTTPException(status_code = 400, detail = str(e))
 
 @router.get("/", response_model=List[UsuarioResponse])
-def get_all():
+def get_all(current_user: dict = Depends(require_admin)):
     try:
         users = service.get_all()
         return users
@@ -40,7 +41,7 @@ def get_all():
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/{usuario_id}", response_model=UsuarioResponse)
-def get_by_id(usuario_id: int):
+def get_by_id(usuario_id: int, current_user: dict = Depends(require_admin)):
     try:
         user = service.get_by_id(usuario_id)
         if not user:
@@ -50,7 +51,7 @@ def get_by_id(usuario_id: int):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.put("/{usuario_id}", response_model=UsuarioResponse)
-def update(usuario_id: int, data: UsuarioUpdate):
+def update(usuario_id: int, data: UsuarioUpdate, current_user: dict = Depends(require_admin)):
     try:
         updated = service.update(
             usuario_id=usuario_id,
@@ -67,7 +68,7 @@ def update(usuario_id: int, data: UsuarioUpdate):
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/{usuario_id}")
-def delete(usuario_id: int):
+def delete(usuario_id: int, current_user: dict = Depends(require_admin)):
     try:
         deleted = service.delete(usuario_id)
         if not deleted:
