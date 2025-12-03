@@ -1,7 +1,7 @@
-from config.connection import get_db_connection
+from config.connection import db_connection
 
 class PermissoesRepository:
-    def __init__(self, conn_factory = get_db_connection):
+    def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
 
     #/////////////////////////

@@ -1,5 +1,6 @@
 from repositories import UsuariosSistemaRepository, FuncionariosRepository, PermissoesRepository
 from utils import PasswordUtil
+from utils.jwt_util import create_access_token
 
 class UsuariosService:
     def __init__(self):
@@ -77,9 +78,11 @@ class UsuariosService:
         usuario = self.repository.get_by_username(username = username)
         if not usuario:
             raise ValueError("Usuário não encontrado")
-        
+
         hashed = usuario["password"]
         if not PasswordUtil.verify_password(raw_password= password, hashed_password= hashed):
             raise ValueError("Credenciais inválidas")
-        
-        return usuario
+
+        token_data = {"sub": str(usuario["id"]), "username": usuario["username"], "id_permissao" : usuario["id_permissao"]}
+        access_token = create_access_token(data=token_data)
+        return {"access_token": access_token, "token_type": "bearer"}

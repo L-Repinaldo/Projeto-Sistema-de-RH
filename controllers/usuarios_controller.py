@@ -2,6 +2,11 @@ from fastapi import APIRouter, HTTPException, Depends
 from service import UsuariosService
 from schemas import  UsuarioCreate, UsuarioUpdate, UsuarioResponse
 from typing import List
+from pydantic import BaseModel
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
 
 
@@ -70,5 +75,15 @@ def delete(usuario_id: int):
         return {"message": "Usuario deletado com sucesso"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/login")
+def login(data: LoginRequest):
+    try:
+        token = service.login(data.username, data.password)
+        return token
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 
 
