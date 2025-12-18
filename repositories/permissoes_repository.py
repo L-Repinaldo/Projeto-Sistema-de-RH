@@ -21,7 +21,7 @@ class PermissoesRepository:
                 RETURNING id;
         """
 
-        cur.execute(query, (nome))
+        cur.execute(query, (nome,))
         id_permissao = cur.fetchone()[0]
 
         cur.close()
@@ -121,7 +121,7 @@ class PermissoesRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_permissao))
+        cur.execute(query, (id_permissao,))
         conn.commit()
 
         cur.close()
@@ -140,7 +140,7 @@ class PermissoesRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_permissao))
+        cur.execute(query, (id_permissao,))
         conn.commit()
 
         cur.close()

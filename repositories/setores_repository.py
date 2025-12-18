@@ -37,10 +37,10 @@ class SetoresRepository:
 
         query = """
                 SELECT id, nome, id_gerente FROM setores
-                WHERE id = (%s);
+                WHERE id = %s;
         """
 
-        cur.execute(query, (id_setor))
+        cur.execute(query, (id_setor,))
         row = cur.fetchone()
 
         cur.close()
@@ -66,7 +66,7 @@ class SetoresRepository:
         """
 
         cur.execute(query)
-        rows = cur.fetchall
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()
@@ -126,7 +126,7 @@ class SetoresRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_setor))
+        cur.execute(query, (id_setor,))
 
         cur.close()
         conn.close()
@@ -140,15 +140,15 @@ class SetoresRepository:
     def get_by_name(self, nome):
 
         conn = self.conn_factory()
-        
+
         cur = conn.cursor()
 
         query = """
                 SELECT id, nome, id_gerente FROM setores
-                WHERE nome = (%s);
+                WHERE nome ILIKE %s;
         """
 
-        cur.execute(query, (nome))
+        cur.execute(query, (nome,))
         row = cur.fetchone()
 
         cur.close()
@@ -171,10 +171,10 @@ class SetoresRepository:
 
         query = """
                 SELECT id, nome, id_gerente FROM setores
-                WHERE id_gerente = (%s);
+                WHERE id_gerente = %s;
         """
 
-        cur.execute(query, (id_gerente))
+        cur.execute(query, (id_gerente,))
         row = cur.fetchone()
 
         cur.close()
@@ -188,3 +188,24 @@ class SetoresRepository:
             }
 
         return None
+    
+    def setor_tem_gerente(self, id_setor: int) -> bool:
+        conn = self.conn_factory()
+        cur = conn.cursor()
+
+        query = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM setores
+                WHERE id = %s
+                AND id_gerente IS NOT NULL
+            );
+        """
+
+        cur.execute(query, (id_setor,))
+        existe = cur.fetchone()[0]
+
+        cur.close()
+        conn.close()
+
+        return bool(existe)

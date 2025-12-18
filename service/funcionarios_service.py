@@ -23,11 +23,13 @@ class FuncionariosService:
         if self.repository.get_by_email(email = email):
             raise ValueError("Email já cadastrado")
         
-
         if not self.setores_repo.get_by_id(id_setor= id_setor):
             raise ValueError("Setor não encontrado")
         
         cargo = self.cargos_repo.get_by_id(id_cargo= id_cargo)
+        if id_cargo == 3:
+            if self.setores_repo.setor_tem_gerente(id_setor= id_setor):
+                raise ValueError("Este setor já possui gerente")
         if not cargo:
             raise ValueError("Cargo não encontrado.")
         if not cargo["ativo"]:
@@ -78,7 +80,7 @@ class FuncionariosService:
     
     def get_by_id(self, funcionario_id):
 
-        funcionario = self.repository.get_by_id(funcionario_id= funcionario_id)
+        funcionario = self.repository.get_by_id(funcionario_id = funcionario_id)
 
         if not funcionario:
             raise ValueError("Funcionário não encontrado.")

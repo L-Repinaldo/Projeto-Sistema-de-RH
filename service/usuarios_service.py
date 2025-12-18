@@ -22,7 +22,7 @@ class UsuariosService:
             raise ValueError("Permissão está desativada e não pode ser atribuída.")
 
         if id_funcionario:
-            funcionario = self.funcionarios_repo.get_by_id(id_funcionario = id_funcionario)
+            funcionario = self.funcionarios_repo.get_by_id( funcionario_id = id_funcionario)
             if not funcionario:
                 raise ValueError("Funcionario não encontrado")
 

@@ -16,3 +16,5 @@ class PasswordUtil:
     @staticmethod
     def verify_password(raw_password: str, hashed_password: str) -> bool:
         return bcrypt.checkpw(raw_password.encode('utf-8'), hashed_password.encode('utf-8'))
+    
+

@@ -12,12 +12,12 @@ class FuncionariosRepository:
     def create(self, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao):
 
         conn = self.conn_factory()
-        
+
         cur = conn.cursor()
 
         query = """
-                INSERT INTO funcionarios (nome, sobrenome, cpf, email, id_cargo, salario, data_nascimento, data_admissao)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO funcionarios (nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id;
         """
 
@@ -40,7 +40,7 @@ class FuncionariosRepository:
                 WHERE id = (%s);
         """
 
-        cur.execute(query, (funcionario_id))
+        cur.execute(query, (funcionario_id,))
         row = cur.fetchone()
 
         cur.close()
@@ -73,7 +73,7 @@ class FuncionariosRepository:
         """
 
         cur.execute(query)
-        rows = cur.fetchall
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()
@@ -164,7 +164,7 @@ class FuncionariosRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (funcionario_id))
+        cur.execute(query, (funcionario_id,))
 
         cur.close()
         conn.close()
@@ -178,12 +178,12 @@ class FuncionariosRepository:
     def get_by_nome_completo(self, nome, sobrenome):
 
         conn = self.conn_factory()
-        
+
         cur = conn.cursor()
 
         query = """
                 SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
-                WHERE nome AND sobrenome = (%s, %s);
+                WHERE nome ILIKE %s AND sobrenome ILIKE %s;
         """
 
         cur.execute(query, (nome, sobrenome))
@@ -203,7 +203,7 @@ class FuncionariosRepository:
                 "id_cargo" : row[6],
                 "salario" : row[7],
                 "data_nascimento" : row[8],
-                "data_admissao" : row[9] 
+                "data_admissao" : row[9]
             }
 
         return None
@@ -216,10 +216,10 @@ class FuncionariosRepository:
 
         query = """
                 SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
-                WHERE cpf = (%s);
+                WHERE cpf = %s;
         """
 
-        cur.execute(query, (cpf))
+        cur.execute(query, (cpf,))
         row = cur.fetchone()
 
         cur.close()
@@ -245,15 +245,15 @@ class FuncionariosRepository:
     def get_by_email(self, email):
 
         conn = self.conn_factory()
-        
+
         cur = conn.cursor()
 
         query = """
                 SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
-                WHERE email = (%s);
+                WHERE email ILIKE %s;
         """
 
-        cur.execute(query, (email))
+        cur.execute(query, (email,))
         row = cur.fetchone()
 
         cur.close()
@@ -270,7 +270,7 @@ class FuncionariosRepository:
                 "id_cargo" : row[6],
                 "salario" : row[7],
                 "data_nascimento" : row[8],
-                "data_admissao" : row[9] 
+                "data_admissao" : row[9]
             }
 
         return None
@@ -278,16 +278,16 @@ class FuncionariosRepository:
     def get_by_nome(self, nome):
 
         conn = self.conn_factory()
-        
+
         cur = conn.cursor()
 
         query = """
                 SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
-                WHERE nome = (%s);
+                WHERE nome ILIKE %s;
         """
 
-        cur.execute(query, (nome))
-        rows = cur.fetchall
+        cur.execute(query, (nome,))
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()
@@ -303,7 +303,7 @@ class FuncionariosRepository:
                 "id_cargo" : r[6],
                 "salario" : r[7],
                 "data_nascimento" : r[8],
-                "data_admissao" : r[9] 
+                "data_admissao" : r[9]
             }
             for r in rows
         ]
@@ -312,16 +312,16 @@ class FuncionariosRepository:
     def get_by_sobrenome(self, sobrenome):
 
         conn = self.conn_factory()
-        
+
         cur = conn.cursor()
 
         query = """
                 SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
-                WHERE sobrenome = (%s);
+                WHERE sobrenome ILIKE %s;
         """
 
-        cur.execute(query, (sobrenome))
-        rows = cur.fetchall
+        cur.execute(query, (sobrenome,))
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()
@@ -337,7 +337,7 @@ class FuncionariosRepository:
                 "id_cargo" : r[6],
                 "salario" : r[7],
                 "data_nascimento" : r[8],
-                "data_admissao" : r[9] 
+                "data_admissao" : r[9]
             }
             for r in rows
         ]
@@ -351,11 +351,11 @@ class FuncionariosRepository:
 
         query = """
                 SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
-                WHERE id_cargo = (%s);
+                WHERE id_cargo = %s;
         """
 
-        cur.execute(query, (id_cargo))
-        rows = cur.fetchall
+        cur.execute(query, (id_cargo,))
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()
@@ -385,11 +385,11 @@ class FuncionariosRepository:
 
         query = """
                 SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
-                WHERE id_setor = (%s);
+                WHERE id_setor = %s;
         """
 
-        cur.execute(query, (id_setor))
-        rows = cur.fetchall
+        cur.execute(query, (id_setor,))
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()
@@ -418,11 +418,11 @@ class FuncionariosRepository:
 
         query = """
                 SELECT id, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao FROM funcionarios
-                WHERE salario = (%s);
+                WHERE salario = %s;
         """
 
-        cur.execute(query, (salario))
-        rows = cur.fetchall
+        cur.execute(query, (salario,))
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()

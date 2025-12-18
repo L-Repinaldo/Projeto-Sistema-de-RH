@@ -17,11 +17,11 @@ class BeneficiosRepository:
 
         query = """
                 INSERT INTO beneficios (nome)
-                VALUES (%s)
+                VALUES %s
                 RETURNING id;
         """
 
-        cur.execute(query, (nome))
+        cur.execute(query, (nome,))
         setor_id = cur.fetchone()[0]
 
         cur.close()
@@ -36,10 +36,10 @@ class BeneficiosRepository:
 
         query = """
                 SELECT id, nome FROM beneficios
-                WHERE id = (%s);
+                WHERE id = %s;
         """
 
-        cur.execute(query, (id_beneficios))
+        cur.execute(query, (id_beneficios,))
         row = cur.fetchone()
 
         cur.close()
@@ -64,7 +64,7 @@ class BeneficiosRepository:
         """
 
         cur.execute(query)
-        rows = cur.fetchall
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()
@@ -119,7 +119,7 @@ class BeneficiosRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_beneficios))
+        cur.execute(query, (id_beneficios,))
 
         cur.close()
         conn.close()
@@ -132,15 +132,15 @@ class BeneficiosRepository:
     def get_by_name(self, nome):
 
         conn = self.conn_factory()
-        
+
         cur = conn.cursor()
 
         query = """
                 SELECT id, nome FROM beneficios
-                WHERE nome = (%s);
+                WHERE nome ILIKE %s;
         """
 
-        cur.execute(query, (nome))
+        cur.execute(query, (nome,))
         row = cur.fetchone()
 
         cur.close()
