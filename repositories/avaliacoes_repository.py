@@ -37,10 +37,10 @@ class AvaliacoesRepository:
 
         query = """
                 SELECT id, id_funcionario, data_avaliacao, nota FROM avaliacoes
-                WHERE id = (%s);
+                WHERE id = %s;
         """
 
-        cur.execute(query, (id_avaliacoes))
+        cur.execute(query, (id_avaliacoes,))
         row = cur.fetchone()
 
         cur.close()
@@ -127,7 +127,7 @@ class AvaliacoesRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_avaliacoes))
+        cur.execute(query, (id_avaliacoes,))
 
         cur.close()
         conn.close()
@@ -148,7 +148,7 @@ class AvaliacoesRepository:
                 WHERE id_funcionario = %s;
         """
 
-        cur.execute(query, (id_funcionario))
+        cur.execute(query, (id_funcionario,))
         rows = cur.fetchall()
 
         cur.close()
@@ -214,7 +214,7 @@ class AvaliacoesRepository:
                 WHERE id_funcionario = %s;
         """
 
-        cur.execute(query, (id_funcionario))
+        cur.execute(query, (id_funcionario,))
 
         cur.close()
         conn.close()

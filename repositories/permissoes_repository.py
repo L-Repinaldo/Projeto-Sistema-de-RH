@@ -1,7 +1,7 @@
-from config.connection import get_db_connection
+from config.connection import db_connection
 
 class PermissoesRepository:
-    def __init__(self, conn_factory = get_db_connection):
+    def __init__(self, conn_factory = db_connection):
         self.conn_factory = conn_factory
 
     #/////////////////////////
@@ -21,7 +21,7 @@ class PermissoesRepository:
                 RETURNING id;
         """
 
-        cur.execute(query, (nome))
+        cur.execute(query, (nome,))
         id_permissao = cur.fetchone()[0]
 
         cur.close()
@@ -121,7 +121,7 @@ class PermissoesRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_permissao))
+        cur.execute(query, (id_permissao,))
         conn.commit()
 
         cur.close()
@@ -140,7 +140,7 @@ class PermissoesRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_permissao))
+        cur.execute(query, (id_permissao,))
         conn.commit()
 
         cur.close()

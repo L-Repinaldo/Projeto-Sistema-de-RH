@@ -12,7 +12,7 @@ class FuncionariosService:
         self.cargos_repo = CargosRepository()
 
     
-    def create(self, nome, sobrenome, cpf, email, id_setor, id_cargo, faixa_salarial, data_nascimento, data_admissao):
+    def create(self, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao):
 
         if self.repository.get_by_nome_completo(nome = nome, sobrenome = sobrenome):
             raise ValueError("Já existe funcionário com esse nome completo.")
@@ -23,18 +23,20 @@ class FuncionariosService:
         if self.repository.get_by_email(email = email):
             raise ValueError("Email já cadastrado")
         
-
         if not self.setores_repo.get_by_id(id_setor= id_setor):
             raise ValueError("Setor não encontrado")
         
         cargo = self.cargos_repo.get_by_id(id_cargo= id_cargo)
+        if id_cargo == 3:
+            if self.setores_repo.setor_tem_gerente(id_setor= id_setor):
+                raise ValueError("Este setor já possui gerente")
         if not cargo:
             raise ValueError("Cargo não encontrado.")
         if not cargo["ativo"]:
             raise ValueError("Cargo está desativado e não pode ser atribuído.")
 
         return self.repository.create(nome = nome, sobrenome = sobrenome, cpf = cpf, email= email, id_setor = id_setor, id_cargo = id_cargo,
-                                      faixa_salarial= faixa_salarial, data_nascimento= data_nascimento, data_admissao= data_admissao )
+                                      salario= salario, data_nascimento= data_nascimento, data_admissao= data_admissao )
 
     def get_by_nome(self, nome):
 
@@ -76,10 +78,19 @@ class FuncionariosService:
             raise ValueError("Nenhum funcionário encontrado com esse cargo.")      
         return funcionarios
     
+    def get_by_id(self, funcionario_id):
+
+        funcionario = self.repository.get_by_id(funcionario_id = funcionario_id)
+
+        if not funcionario:
+            raise ValueError("Funcionário não encontrado.")
+
+        return funcionario
+
     def get_all(self):
         return self.repository.get_all()
     
-    def update(self, funcionario_id, nome = None, sobrenome = None, email = None, id_setor = None, id_cargo = None, faixa_salarial = None):
+    def update(self, funcionario_id, nome = None, sobrenome = None, email = None, id_setor = None, id_cargo = None, salario = None):
         
         funcionario = self.repository.get_by_id(funcionario_id= funcionario_id)
 
@@ -119,7 +130,7 @@ class FuncionariosService:
                 raise ValueError("Cargo está desativado e não pode ser atribuído.")
 
         return self.repository.update(funcionario_id = funcionario_id, nome = nome, sobrenome = sobrenome, email = email,
-                                       id_setor = id_setor, id_cargo = id_cargo, faixa_salarial = faixa_salarial)
+                                       id_setor = id_setor, id_cargo = id_cargo, salario = salario)
     
     def delete(self, funcionario_id):
 

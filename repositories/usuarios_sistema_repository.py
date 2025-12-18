@@ -39,7 +39,7 @@ class UsuariosSistemaRepository:
                 WHERE id = (%s);
         """
 
-        cur.execute(query, (id_usuarios_sistema))
+        cur.execute(query, (id_usuarios_sistema,))
         row = cur.fetchone()
 
         cur.close()
@@ -137,7 +137,7 @@ class UsuariosSistemaRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_usuarios_sistema))
+        cur.execute(query, (id_usuarios_sistema,))
 
         cur.close()
         conn.close()
@@ -151,12 +151,12 @@ class UsuariosSistemaRepository:
 
     def get_by_username(self, username):
         conn = self.conn_factory()
-        
+
         cur = conn.cursor()
 
         query = """
                 SELECT id, id_funcionario, username, password, id_permissao FROM usuarios_sistema
-                WHERE username = %s;
+                WHERE username ILIKE %s;
         """
 
         cur.execute(query, (username,))

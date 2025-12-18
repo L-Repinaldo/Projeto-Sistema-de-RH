@@ -68,7 +68,7 @@ class LogsAcessoRepository:
         """
 
         cur.execute(query)
-        rows = cur.fetchall
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()

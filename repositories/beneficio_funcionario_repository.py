@@ -32,15 +32,15 @@ class BeneficioFuncionarioRepository:
     def get_by_id(self, id_beneficio_funcionario):
 
         conn = self.conn_factory()
-        
+
         cur = conn.cursor()
 
         query = """
-                SELECT id, id_funcionario FROM beneficio_funcionario
-                WHERE id = (%s);
+                SELECT id, id_funcionario, id_beneficio, ativo FROM beneficio_funcionario
+                WHERE id = %s;
         """
 
-        cur.execute(query, (id_beneficio_funcionario))
+        cur.execute(query, (id_beneficio_funcionario,))
         row = cur.fetchone()
 
         cur.close()
@@ -67,13 +67,13 @@ class BeneficioFuncionarioRepository:
         """
 
         cur.execute(query)
-        rows = cur.fetchall
+        rows = cur.fetchall()
 
         cur.close()
         conn.close()
 
         return [
-            {"id" : r[0], "id_funcionario": r[1], "id_benefico" : r[2], "ativo" : r[3] }
+            {"id" : r[0], "id_funcionario": r[1], "id_beneficio" : r[2], "ativo" : r[3] }
             for r in rows
         ]
 
@@ -122,7 +122,7 @@ class BeneficioFuncionarioRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_beneficio_funcionario))
+        cur.execute(query, (id_beneficio_funcionario,))
 
         cur.close()
         conn.close()
@@ -143,14 +143,14 @@ class BeneficioFuncionarioRepository:
                 WHERE id_funcionario = %s;
         """
 
-        cur.execute(query, (id_funcionario))
+        cur.execute(query, (id_funcionario,))
         rows = cur.fetchall()
 
         cur.close()
         conn.close()
 
         return [
-            {"id" : r[0], "id_funcionario": r[1], "id_benefico" : r[2], "ativo" : r[3] }
+            {"id" : r[0], "id_funcionario": r[1], "id_beneficio" : r[2], "ativo" : r[3] }
             for r in rows
         ]
     
@@ -165,14 +165,14 @@ class BeneficioFuncionarioRepository:
                 WHERE id_beneficio = %s;
         """
 
-        cur.execute(query, (id_beneficio))
+        cur.execute(query, (id_beneficio,))
         rows = cur.fetchall()
 
         cur.close()
         conn.close()
 
         return [
-            {"id" : r[0], "id_funcionario": r[1], "id_benefico" : r[2], "ativo" : r[3] }
+            {"id" : r[0], "id_funcionario": r[1], "id_beneficio" : r[2], "ativo" : r[3] }
             for r in rows
         ]
     
@@ -187,7 +187,6 @@ class BeneficioFuncionarioRepository:
                 WHERE id_funcionario = %s;
         """
 
-        cur.execute(query, (id_funcionario))
 
         cur.close()
         conn.close()

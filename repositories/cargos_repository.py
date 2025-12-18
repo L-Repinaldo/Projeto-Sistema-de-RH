@@ -17,7 +17,7 @@ class CargosRepository:
                 RETURNING id;
         """
 
-        cur.execute(query, (nome))
+        cur.execute(query, (nome,))
         id_cargo = cur.fetchone()[0]
 
         cur.close()
@@ -53,15 +53,15 @@ class CargosRepository:
     def get_by_name(self, nome):
 
         conn = self.conn_factory()
-        
+
         cur = conn.cursor()
 
         query = """
                 SELECT id, nome, ativo FROM cargos
-                WHERE nome = (%s);
+                WHERE nome ILIKE (%s);
         """
 
-        cur.execute(query, (nome))
+        cur.execute(query, (nome,))
         row = cur.fetchone()
 
         cur.close()
@@ -130,7 +130,7 @@ class CargosRepository:
                 WHERE id = %s;
         """
 
-        cur.execute(query, (id_cargo))
+        cur.execute(query, (id_cargo,))
         conn.commit()
 
         cur.close()
@@ -148,7 +148,7 @@ class CargosRepository:
                 SET ativo = TRUE
                 WHERE id = %s;
         """
-        cur.execute(query, (id_cargo))
+        cur.execute(query, (id_cargo,))
         conn.commit()
 
         cur.close()
