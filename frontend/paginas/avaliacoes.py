@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from datetime import date
+from utils import handle_auth_error
 
 API_URL = "http://localhost:8086"
 
@@ -9,7 +10,7 @@ def avaliacoes():
 
     headers = {"Authorization": f"Bearer {st.session_state['token']}"}
 
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Listar Todas", "Criar", "Buscar por ID", "Buscar por Funcionário", "Buscar por Data", "Buscar por Nota"])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Listar Todas", "Criar", "Buscar por ID", "Buscar por Funcionário", "Buscar por Data", "Buscar por Nota", "Deletar"])
 
     with tab1:
         if st.button("Listar Avaliações"):
@@ -17,12 +18,10 @@ def avaliacoes():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab2:
         with st.form("criar_avaliacao"):
@@ -41,12 +40,10 @@ def avaliacoes():
                 response = requests.post(f"{API_URL}/avaliacoes", json=payload, headers=headers)
                 if response.status_code == 200:
                     st.success("Avaliação criada")
-                elif response.status_code in [401, 403]:
-                    st.error("Acesso negado")
-                    del st.session_state["token"]
-                    st.rerun()
                 else:
-                    st.error(f"Erro: {response.text}")
+                    handle_auth_error(response)
+                    if response.status_code not in [401, 403]:
+                        st.error(f"Erro: {response.text}")
 
     with tab3:
         avaliacao_id = st.number_input("ID Avaliação", min_value=1, step=1)
@@ -55,12 +52,10 @@ def avaliacoes():
             if response.status_code == 200:
                 data = response.json()
                 st.json(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab4:
         id_funcionario = st.number_input("ID Funcionário", min_value=1, step=1)
@@ -69,12 +64,10 @@ def avaliacoes():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab5:
         start_date = st.date_input("Data Início")
@@ -84,12 +77,10 @@ def avaliacoes():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab6:
         min_nota = st.number_input("Nota Mínima", min_value=0.0, max_value=10.0, step=0.1)
@@ -99,23 +90,19 @@ def avaliacoes():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     # Delete
-    st.subheader("Deletar Avaliação")
-    delete_id = st.number_input("ID para Deletar", min_value=1, step=1, key="delete_avaliacao")
-    if st.button("Deletar"):
-        response = requests.delete(f"{API_URL}/avaliacoes/{delete_id}", headers=headers)
-        if response.status_code == 200:
-            st.success("Avaliação deletada")
-        elif response.status_code in [401, 403]:
-            st.error("Acesso negado")
-            del st.session_state["token"]
-            st.rerun()
-        else:
-            st.error(f"Erro: {response.text}")
+    with tab7:
+        delete_id = st.number_input("ID para Deletar", min_value=1, step=1, key="delete_avaliacao")
+        if st.button("Deletar"):
+            response = requests.delete(f"{API_URL}/avaliacoes/{delete_id}", headers=headers)
+            if response.status_code == 200:
+                st.success("Avaliação deletada")
+            else:
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")

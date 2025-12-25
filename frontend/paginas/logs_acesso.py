@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from datetime import datetime
+from utils import handle_auth_error
 
 API_URL = "http://localhost:8086"
 
@@ -17,12 +18,10 @@ def logs_acesso():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab2:
         log_id = st.number_input("ID Log", min_value=1, step=1)
@@ -31,12 +30,10 @@ def logs_acesso():
             if response.status_code == 200:
                 data = response.json()
                 st.json(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab3:
         id_usuario = st.number_input("ID Usuário", min_value=1, step=1)
@@ -45,12 +42,10 @@ def logs_acesso():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab4:
         start_time = st.text_input("Tempo Início (YYYY-MM-DD HH:MM:SS)")
@@ -60,9 +55,7 @@ def logs_acesso():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")

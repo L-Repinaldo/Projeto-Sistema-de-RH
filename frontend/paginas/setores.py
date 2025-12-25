@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+from utils import handle_auth_error
 
 API_URL = "http://localhost:8086"
 
@@ -16,12 +17,10 @@ def setores():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab2:
         with st.form("criar_setor"):
@@ -33,12 +32,10 @@ def setores():
                 response = requests.post(f"{API_URL}/setores", json=payload, headers=headers)
                 if response.status_code == 200:
                     st.success("Setor criado")
-                elif response.status_code in [401, 403]:
-                    st.error("Acesso negado")
-                    del st.session_state["token"]
-                    st.rerun()
                 else:
-                    st.error(f"Erro: {response.text}")
+                    handle_auth_error(response)
+                    if response.status_code not in [401, 403]:
+                        st.error(f"Erro: {response.text}")
 
     with tab3:
         setor_id = st.number_input("ID Setor", min_value=1, step=1)
@@ -47,12 +44,10 @@ def setores():
             if response.status_code == 200:
                 data = response.json()
                 st.json(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab4:
         with st.form("atualizar_setor"):
@@ -65,12 +60,10 @@ def setores():
                 response = requests.put(f"{API_URL}/setores/{setor_id}", json=payload, headers=headers)
                 if response.status_code == 200:
                     st.success("Setor atualizado")
-                elif response.status_code in [401, 403]:
-                    st.error("Acesso negado")
-                    del st.session_state["token"]
-                    st.rerun()
                 else:
-                    st.error(f"Erro: {response.text}")
+                    handle_auth_error(response)
+                    if response.status_code not in [401, 403]:
+                        st.error(f"Erro: {response.text}")
 
     with tab5:
         setor_id = st.number_input("ID Setor para Deletar", min_value=1, step=1)
@@ -78,9 +71,7 @@ def setores():
             response = requests.delete(f"{API_URL}/setores/{setor_id}", headers=headers)
             if response.status_code == 200:
                 st.success("Setor deletado")
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")

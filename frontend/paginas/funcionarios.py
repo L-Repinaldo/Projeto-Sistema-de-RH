@@ -1,6 +1,8 @@
+import datetime
 import streamlit as st
 import requests
 from datetime import date
+from utils import handle_auth_error
 
 API_URL = "http://localhost:8086"
 
@@ -9,7 +11,38 @@ def funcionarios():
 
     headers = {"Authorization": f"Bearer {st.session_state['token']}"}
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["Listar Todos", "Criar", "Buscar por ID", "Atualizar", "Buscar por Nome", "Buscar por Sobrenome", "Buscar por Setor", "Buscar por Cargo"])
+    # Fetch options for selectboxes
+    try:
+        setores_response = requests.get(f"{API_URL}/setores", headers=headers)
+        if setores_response.status_code == 200:
+            setores = setores_response.json()
+            setores_names = [s['nome'] for s in setores]
+        else:
+            setores_names = []
+            handle_auth_error(setores_response)
+
+        cargos_response = requests.get(f"{API_URL}/cargos", headers=headers)
+        if cargos_response.status_code == 200:
+            cargos = cargos_response.json()
+            cargos_names = [c['nome'] for c in cargos]
+        else:
+            cargos_names = []
+            handle_auth_error(cargos_response)
+
+        beneficios_response = requests.get(f"{API_URL}/beneficios", headers=headers)
+        if beneficios_response.status_code == 200:
+            beneficios = beneficios_response.json()
+            beneficios_names = [b['nome'] for b in beneficios]
+        else:
+            beneficios_names = []
+            handle_auth_error(beneficios_response)
+    except Exception as e:
+        st.error(f"Erro ao carregar opções: {e}")
+        setores_names = []
+        cargos_names = []
+        beneficios_names = []
+
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(["Listar Todos", "Criar", "Buscar por ID", "Atualizar", "Buscar por Nome", "Buscar por Sobrenome", "Buscar por Setor", "Buscar por Cargo", "Deletar"])
 
     with tab1:
         if st.button("Listar Funcionários"):
@@ -17,42 +50,46 @@ def funcionarios():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab2:
         with st.form("criar_funcionario"):
             nome = st.text_input("Nome")
             sobrenome = st.text_input("Sobrenome")
             email = st.text_input("Email")
-            telefone = st.text_input("Telefone")
-            data_nascimento = st.date_input("Data Nascimento")
-            id_setor = st.number_input("ID Setor", min_value=1, step=1)
-            id_cargo = st.number_input("ID Cargo", min_value=1, step=1)
+            cpf = st.text_input("CPF")
+            min_date_birth = datetime.date(1950, 1, 1)
+            data_nascimento = st.date_input("Data Nascimento", min_value= min_date_birth)
+            min_date_admi = datetime.date(2010, 1, 1)
+            data_admissao = st.date_input("Data admissão", min_value = min_date_admi)
+            salario = st.number_input("Salário")
+            setor = st.selectbox("Setor", options=setores_names, key="criar_setor")
+            cargo = st.selectbox("Cargo", options=cargos_names, key="criar_cargo")
+            beneficios = st.multiselect("Benefícios", options=beneficios_names, key="criar_beneficios")
             submitted = st.form_submit_button("Criar")
             if submitted:
                 payload = {
                     "nome": nome,
                     "sobrenome": sobrenome,
                     "email": email,
-                    "telefone": telefone,
+                    "cpf": cpf,
+                    "salario" : salario,
                     "data_nascimento": str(data_nascimento),
-                    "id_setor": id_setor,
-                    "id_cargo": id_cargo
+                    "data_admissao": str(data_admissao),
+                    "setor": setor,
+                    "cargo": cargo,
+                    "beneficios": beneficios
                 }
                 response = requests.post(f"{API_URL}/funcionarios", json=payload, headers=headers)
                 if response.status_code == 200:
                     st.success("Funcionário criado")
-                elif response.status_code in [401, 403]:
-                    st.error("Acesso negado")
-                    del st.session_state["token"]
-                    st.rerun()
                 else:
-                    st.error(f"Erro: {response.text}")
+                    handle_auth_error(response)
+                    if response.status_code not in [401, 403]:
+                        st.error(f"Erro: {response.text}")
 
     with tab3:
         funcionario_id = st.number_input("ID Funcionário", min_value=1, step=1)
@@ -61,12 +98,10 @@ def funcionarios():
             if response.status_code == 200:
                 data = response.json()
                 st.json(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab4:
         with st.form("atualizar_funcionario"):
@@ -74,30 +109,30 @@ def funcionarios():
             nome = st.text_input("Nome")
             sobrenome = st.text_input("Sobrenome")
             email = st.text_input("Email")
-            telefone = st.text_input("Telefone")
+            cpf = st.text_input("CPF")
             data_nascimento = st.date_input("Data Nascimento")
-            id_setor = st.number_input("ID Setor", min_value=1, step=1)
-            id_cargo = st.number_input("ID Cargo", min_value=1, step=1)
+            setor = st.selectbox("Setor", options=setores_names, key="atualizar_setor")
+            cargo = st.selectbox("Cargo", options=cargos_names, key="atualizar_cargo")
+            salario = st.number_input("Salario")
             submitted = st.form_submit_button("Atualizar")
             if submitted:
                 payload = {
                     "nome": nome,
                     "sobrenome": sobrenome,
                     "email": email,
-                    "telefone": telefone,
+                    "cpf": cpf,
                     "data_nascimento": str(data_nascimento),
-                    "id_setor": id_setor,
-                    "id_cargo": id_cargo
+                    "setor": setor,
+                    "cargo": cargo,
+                    "salario" : salario
                 }
                 response = requests.put(f"{API_URL}/funcionarios/{funcionario_id}", json=payload, headers=headers)
                 if response.status_code == 200:
                     st.success("Funcionário atualizado")
-                elif response.status_code in [401, 403]:
-                    st.error("Acesso negado")
-                    del st.session_state["token"]
-                    st.rerun()
                 else:
-                    st.error(f"Erro: {response.text}")
+                    handle_auth_error(response)
+                    if response.status_code not in [401, 403]:
+                        st.error(f"Erro: {response.text}")
 
     with tab5:
         nome = st.text_input("Nome")
@@ -106,12 +141,10 @@ def funcionarios():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab6:
         sobrenome = st.text_input("Sobrenome")
@@ -120,12 +153,10 @@ def funcionarios():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab7:
         id_setor = st.number_input("ID Setor", min_value=1, step=1, key="buscar_setor")
@@ -134,12 +165,10 @@ def funcionarios():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab8:
         id_cargo = st.number_input("ID Cargo", min_value=1, step=1, key="buscar_cargo")
@@ -148,23 +177,19 @@ def funcionarios():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     # Delete
-    st.subheader("Deletar Funcionário")
-    delete_id = st.number_input("ID para Deletar", min_value=1, step=1, key="delete_funcionario")
-    if st.button("Deletar"):
-        response = requests.delete(f"{API_URL}/funcionarios/{delete_id}", headers=headers)
-        if response.status_code == 200:
-            st.success("Funcionário deletado")
-        elif response.status_code in [401, 403]:
-            st.error("Acesso negado")
-            del st.session_state["token"]
-            st.rerun()
-        else:
-            st.error(f"Erro: {response.text}")
+    with tab9:
+        delete_id = st.number_input("ID para Deletar", min_value=1, step=1, key="delete_funcionario")
+        if st.button("Deletar"):
+            response = requests.delete(f"{API_URL}/funcionarios/{delete_id}", headers=headers)
+            if response.status_code == 200:
+                st.success("Funcionário deletado")
+            else:
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")

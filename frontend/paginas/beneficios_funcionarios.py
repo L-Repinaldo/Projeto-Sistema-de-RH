@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+from utils import handle_auth_error
 
 API_URL = "http://localhost:8086"
 
@@ -16,12 +17,10 @@ def beneficios_funcionarios():
             if response.status_code == 200:
                 data = response.json()
                 st.dataframe(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab2:
         with st.form("criar_beneficio_funcionario"):
@@ -34,12 +33,10 @@ def beneficios_funcionarios():
                 response = requests.post(f"{API_URL}/beneficios-funcionarios", json=payload, headers=headers)
                 if response.status_code == 200:
                     st.success("Benefício Funcionário criado")
-                elif response.status_code in [401, 403]:
-                    st.error("Acesso negado")
-                    del st.session_state["token"]
-                    st.rerun()
                 else:
-                    st.error(f"Erro: {response.text}")
+                    handle_auth_error(response)
+                    if response.status_code not in [401, 403]:
+                        st.error(f"Erro: {response.text}")
 
     with tab3:
         beneficio_funcionario_id = st.number_input("ID Benefício Funcionário", min_value=1, step=1)
@@ -48,12 +45,10 @@ def beneficios_funcionarios():
             if response.status_code == 200:
                 data = response.json()
                 st.json(data)
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
 
     with tab4:
         with st.form("atualizar_beneficio_funcionario"):
@@ -65,12 +60,10 @@ def beneficios_funcionarios():
                 response = requests.put(f"{API_URL}/beneficios-funcionarios/{beneficio_funcionario_id}", json=payload, headers=headers)
                 if response.status_code == 200:
                     st.success("Benefício Funcionário atualizado")
-                elif response.status_code in [401, 403]:
-                    st.error("Acesso negado")
-                    del st.session_state["token"]
-                    st.rerun()
                 else:
-                    st.error(f"Erro: {response.text}")
+                    handle_auth_error(response)
+                    if response.status_code not in [401, 403]:
+                        st.error(f"Erro: {response.text}")
 
     with tab5:
         beneficio_funcionario_id = st.number_input("ID Benefício Funcionário para Deletar", min_value=1, step=1)
@@ -78,9 +71,7 @@ def beneficios_funcionarios():
             response = requests.delete(f"{API_URL}/beneficios-funcionarios/{beneficio_funcionario_id}", headers=headers)
             if response.status_code == 200:
                 st.success("Benefício Funcionário deletado")
-            elif response.status_code in [401, 403]:
-                st.error("Acesso negado")
-                del st.session_state["token"]
-                st.rerun()
             else:
-                st.error(f"Erro: {response.text}")
+                handle_auth_error(response)
+                if response.status_code not in [401, 403]:
+                    st.error(f"Erro: {response.text}")
