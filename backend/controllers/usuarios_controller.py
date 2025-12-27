@@ -3,7 +3,7 @@ from service import UsuariosService
 from schemas import  UsuarioCreate, UsuarioUpdate, UsuarioResponse
 from typing import List
 from pydantic import BaseModel
-from utils import require_admin
+from utils import require_admin, log_access
 
 class LoginRequest(BaseModel):
     username: str
@@ -35,8 +35,14 @@ def create(data : UsuarioCreate, current_user: dict = Depends(require_admin)):
 @router.get("/", response_model=List[UsuarioResponse])
 def get_all(current_user: dict = Depends(require_admin)):
     try:
-        users = service.get_all()
-        return users
+        response = service.get_all()
+        log_access(
+            id_usuario=current_user["sub"],
+            operacao="GET_USUARIOS",
+            consulta="/usuarios/",
+            result_count=len(response)
+        )
+        return response
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

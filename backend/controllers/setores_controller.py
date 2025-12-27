@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from service import SetoresService
 from schemas import SetorCreate, SetorUpdate, SetorResponse
 from typing import List
-from utils import require_rh_or_admin, require_user_or_higher
+from utils import require_rh_or_admin, require_user_or_higher, log_access
 
 router = APIRouter(prefix="/setores", tags=["Setores"])
 service = SetoresService()
@@ -19,8 +19,14 @@ def create(data: SetorCreate, current_user: dict = Depends(require_rh_or_admin))
 @router.get("/", response_model=List[SetorResponse])
 def get_all(current_user: dict = Depends(require_user_or_higher)):
     try:
-        setores = service.get_all()
-        return setores
+        response = service.get_all()
+        log_access(
+            id_usuario=current_user["sub"],
+            operacao="GET_SETORES",
+            consulta="/setores/",
+            result_count=len(response)
+        )
+        return response
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

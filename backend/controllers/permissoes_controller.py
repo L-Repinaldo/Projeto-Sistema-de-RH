@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from service import PermissoesService
 from schemas import PermissaoCreate, PermissaoUpdate, PermissaoResponse
 from typing import List
-from utils import require_admin
+from utils import require_admin, log_access
 
 router = APIRouter(prefix="/permissoes", tags=["Permissoes"])
 service = PermissoesService()
@@ -19,8 +19,14 @@ def create(data: PermissaoCreate, current_user: dict = Depends(require_admin)):
 @router.get("/", response_model=List[PermissaoResponse])
 def get_all(current_user: dict = Depends(require_admin)):
     try:
-        permissoes = service.get_all()
-        return permissoes
+        response = service.get_all()
+        log_access(
+            id_usuario=current_user["sub"],
+            operacao="GET_PERMISSOES",
+            consulta="/permissoes/",
+            result_count=len(response)
+        )
+        return response
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

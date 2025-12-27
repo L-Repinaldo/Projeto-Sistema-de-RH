@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from service import CargosService
 from schemas import CargoCreate, CargoUpdate, CargoResponse
 from typing import List
-from utils import require_rh_or_admin, require_user_or_higher
+from utils import require_rh_or_admin, require_user_or_higher, log_access
+
 
 router = APIRouter(prefix="/cargos", tags=["Cargos"])
 service = CargosService()
@@ -19,8 +20,14 @@ def create(data: CargoCreate, current_user: dict = Depends(require_rh_or_admin))
 @router.get("/", response_model=List[CargoResponse])
 def get_all(current_user: dict = Depends(require_user_or_higher)):
     try:
-        cargos = service.repository.get_all()
-        return cargos
+        response = service.repository.get_all()
+        log_access(
+            id_usuario=current_user["sub"],
+            operacao="GET_CARGOS",
+            consulta="/cargos/",
+            result_count=len(response)
+        )
+        return response
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

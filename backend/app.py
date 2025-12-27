@@ -11,7 +11,15 @@ from controllers import (
     setores_controller
 )
 
+from utils.audit_logger import configure_logger
+from service.logs_acesso_service import LogsAcessoService
+
+
 app = FastAPI(title="Sistema de RH", description="API para gerenciamento de recursos humanos")
+
+logs_service = LogsAcessoService()
+configure_logger(logs_service.create)
+
 
 # Include routers
 app.include_router(usuarios_controller.router)

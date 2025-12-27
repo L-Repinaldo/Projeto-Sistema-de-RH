@@ -11,7 +11,7 @@ class LogsAcessoService:
 
         time_stamp = time_stamp or datetime.datetime.now()
 
-        if not self.usuarios_repo.get_by_id(id_usuario= id_usuario):
+        if not self.usuarios_repo.get_by_id(id_usuarios_sistema= id_usuario):
             raise ValueError("Usuário não encontrado.")
         
         if not operacao or not isinstance(operacao, str):
@@ -32,7 +32,7 @@ class LogsAcessoService:
 
     def get_by_usuario(self, id_usuario):
 
-        if not self.usuarios_repo.get_by_id(id_usuario= id_usuario):
+        if not self.usuarios_repo.get_by_id(id_usuarios_sistema= id_usuario):
             raise ValueError("Usuário não encontrado.")
 
         return self.repository.get_by_usuario(id_usuario= id_usuario)
