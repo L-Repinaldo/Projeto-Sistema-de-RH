@@ -1,95 +1,172 @@
 # Projeto-Sistema-de-RH
-🧭 Resumo do Projeto A — Sistema de RH com BI, Controles de Acesso e Privacidade
+🧭 Resumo -> Sistema de Recursos Humanos com Controle de Acesso e Auditoria
 
-Este projeto é um Sistema de Recursos Humanos focado em três pilares principais:
-gestão de dados sensíveis, visualização inteligente de informações e controle rigoroso de acesso.
-Ele serve como uma aplicação profissional completa, adequada para portfólio, e como base estruturada para experimentos posteriores com privacidade (Projeto B (Machine Learning) ).
+Este projeto consiste em um Sistema de Recursos Humanos (RH) desenvolvido para gerenciar informações organizacionais e operacionais de forma segura, auditável e alinhada às boas práticas de privacidade.
+
+A aplicação foi projetada como uma API REST profissional, com controle rigoroso de permissões, separação clara de responsabilidades e mecanismos de rastreabilidade de operações sensíveis.
 
 🎯 Objetivo Geral
 
-Construir um sistema de RH capaz de:
+O sistema tem como objetivo:
 
-Gerenciar informações de funcionários, setores, avaliações e benefícios.
+  - Gerenciar dados de funcionários, cargos, setores, avaliações e benefícios.
+  
+  - Implementar controle de acesso baseado em papéis (RBAC).
+  
+  - Garantir segregação de privilégios entre diferentes tipos de usuários.
+  
+  - Registrar operações relevantes por meio de logs de acesso auditáveis.
+  
+  - Atender princípios fundamentais da LGPD, como minimização, necessidade e rastreabilidade.
 
-Oferecer dashboards interativos e exportação de relatórios.
+⚙️ Tecnologias Utilizadas
 
-Implementar controle de acesso baseado em papéis, com views específicas para cada tipo de usuário.
-
-Aplicar Privacidade Diferencial em consultas estatísticas sensíveis (como médias, contagens e distribuições).
-
-Atender aos princípios da LGPD no tratamento de dados pessoais.
+  - FastAPI — backend e definição da API REST
+  
+  - PostgreSQL — banco de dados relacional
+  
+  - SQLAlchemy / Repositórios customizados — acesso a dados
+  
+  - Pydantic — validação e serialização de schemas
+  
+  - JWT / Dependências de autenticação — segurança e autorização
+  
+  - Arquitetura em camadas — controllers, services, repositories e utils
 
 🏗️ Estrutura do Banco de Dados (visão geral)
-1. Funcionários (funcionarios)
+  1. Funcionários (funcionarios)
+  
+  Armazena dados pessoais e profissionais dos colaboradores, como setor, cargo, status e informações administrativas.
+  
+  2. Setores (setores)
+  
+  Define as áreas da organização, permitindo associação com funcionários e responsáveis.
+  
+  3. Cargos (cargos)
+  
+  Gerencia cargos existentes na empresa e suas relações organizacionais.
+  
+  4. Avaliações (avaliacoes)
+  
+  Registra avaliações de desempenho, notas e observações periódicas.
+  
+  5. Benefícios (beneficios)
+  
+  Mantém o catálogo de benefícios disponíveis na organização.
+  
+  6. Benefícios por Funcionário (beneficios_funcionarios)
+  
+  Relaciona benefícios específicos a funcionários, controlando vínculo e status.
+  
+  7. Usuários do Sistema (usuarios_sistema)
+  
+  Controla autenticação, credenciais e o papel de cada usuário no sistema.
+  
+  8. Logs de Acesso (logs_acesso)
+  
+   Registra operações relevantes realizadas na API, garantindo:
+  
+   - rastreabilidade,
+  
+   - auditoria,
+  
+   -   apoio a investigações e conformidade legal.
+     
+ 9. Permissões (permissoes)
+     
+   Gerencia permissões existentes no sistema da empresa.
+ 
 
-Contém dados pessoais e profissionais essenciais: setor, cargo, faixa salarial, idade e data de admissão.
+🔐 Controle de Acesso (RBAC)
 
-2. Setores (setores)
+O sistema implementa controle de acesso baseado em papéis, garantindo que cada usuário execute apenas operações compatíveis com sua função.
 
-Define as áreas da empresa e seus respectivos gerentes.
+Papéis suportados incluem, por exemplo:
 
-3. Avaliações (avaliacoes)
+- Usuário comum
 
-Registra notas periódicas de desempenho e feedbacks resumidos.
+- Analista
 
-4. Benefícios (beneficios)
+- Gerência
 
-Armazena benefícios utilizados por cada funcionário (ex.: vale-alimentação, plano de saúde).
+- RH
 
-5. Usuários do Sistema (usuarios_sistema)
+- Administrador
 
-Controla autenticação, senhas e o papel de cada usuário no sistema (estagiário, analista, gerente, RH ou admin).
+O controle é aplicado via:
 
-6. Logs de Acesso (logs_acesso)
+- dependências do FastAPI (Depends)
 
-Registra operações relevantes para auditoria, garantindo rastreabilidade.
+- validação centralizada de permissões
 
-🔐 Camadas de Acesso (views por papel)
+- separação clara entre endpoints públicos e restritos
 
-O sistema utiliza views dedicadas, garantindo que cada tipo de usuário veja apenas o que faz sentido para seu papel:
 
-Estagiário: apenas informações básicas de seu setor.
+🧾 Auditoria e Logs de Acesso
 
-Analista: acesso limitado ao setor, com salários e avaliações anonimizados.
+O sistema registra automaticamente operações relevantes, como:
 
-Gerente: visão completa de seu departamento, com dados reais e relatórios.
+- consultas a listas
 
-RH: acesso global às informações sensíveis.
+- acessos administrativos
 
-Admin: gerencia permissões, papéis e auditoria.
+- operações de criação, atualização e exclusão
 
-Controle via GRANT/REVOKE diretamente no banco.
+Os logs armazenam informações como:
 
-📊 Dashboards e BI
+- usuário responsável
 
-O sistema inclui visualizações de:
+- tipo de operação
 
-distribuição salarial
+- contexto da ação
 
-desempenho por setor
+- timestamp
 
-utilização de benefícios
+- volume de resultados (quando aplicável)
 
-evolução da força de trabalho
+Consultas altamente sensíveis são tratadas de forma controlada, evitando exposição indevida de dados nos registros.
 
-métricas agregadas com ruído via Privacidade Diferencial
+🔒 Privacidade e Conformidade
 
-Relatórios podem ser exportados em Excel.
+O projeto foi desenvolvido considerando princípios fundamentais de proteção de dados, como:
 
-🔒 Privacidade Diferencial
+- necessidade: acesso apenas ao que é estritamente necessário
 
-Aplicada em consultas estatísticas que expõem padrões agregados, evitando vazamento indireto de informações sensíveis.
-O mecanismo utilizado (ex.: Laplace) é configurável conforme o nível de privacidade desejado.
+- finalidade: dados usados apenas para fins administrativos
 
-📌 Relação com o Projeto B (Machine Learning)
+- rastreabilidade: todas as ações relevantes são auditáveis
 
-Embora independente, o banco do Projeto A serve como base real para que o Projeto B explore:
+- segregação de acesso: dados sensíveis protegidos por papel
 
-ataques de inferência
+Esses cuidados tornam o sistema compatível com boas práticas exigidas por legislações como a LGPD.
 
-vazamento de atributos
+📁 Estrutura Geral do Projeto
 
-impactos de diferentes níveis de DP
+    backend/
+    ├── controllers/        # Endpoints da API
+    ├── service/            # Regras de negócio
+    ├── repository/         # Acesso ao banco de dados
+    ├── schemas/            # Schemas Pydantic
+    ├── utils/              # Autenticação, autorização e auditoria
+    ├── app.py              # Inicialização da aplicação
 
-O A é o "mundo real protegido".
-O B é o ambiente de pesquisa que tenta ultrapassar essas proteções.
+    frontend/
+    ├── paginas/            # Front para o acesso aos controllers da API
+    ├── auth.py             # Tela de login
+    ├── layout.py           # Implementação sidebar
+    ├── utils.py            # Tratamento de erro caso autorização não permitida
+    ├── app.py 
+
+📌 Considerações Finais
+
+Este sistema foi desenvolvido com foco em robustez, clareza arquitetural e segurança, representando uma aplicação de RH realista, auditável e extensível.
+
+Ele demonstra domínio de:
+
+- arquitetura backend,
+
+- controle de acesso,
+
+- boas práticas de privacidade,
+
+- e desenvolvimento de APIs profissionais.
