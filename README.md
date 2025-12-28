@@ -70,7 +70,9 @@ O sistema tem como objetivo:
   
    - auditoria,
   
-   -   apoio a investigações e conformidade legal.
+   -   apoio a investigações
+     
+   -   e conformidade legal.
      
  9. Permissões (permissoes)
      
