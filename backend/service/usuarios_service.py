@@ -59,7 +59,7 @@ class UsuariosService:
                 raise ValueError("Permissão está desativada e não pode ser atribuída.")
             
         if id_funcionario:
-            funcionario = self.funcionarios_repo.get_by_id(id_funcionario = id_funcionario)
+            funcionario = self.funcionarios_repo.get_by_id(funcionario_id = id_funcionario)
             if not funcionario:
                 raise ValueError("Funcionario não encontrado")
             
@@ -85,4 +85,6 @@ class UsuariosService:
 
         token_data = {"sub": str(usuario["id"]), "username": usuario["username"], "id_permissao" : usuario["id_permissao"]}
         access_token = create_access_token(data=token_data)
-        return {"access_token": access_token, "token_type": "bearer"}
+
+        permissao = self.permissoes_repo.get_by_id(id_permissao= usuario["id_permissao"])
+        return {"usuario": usuario["username"], "permissao" : permissao["nome"], "access_token": access_token, "token_type": "bearer"}

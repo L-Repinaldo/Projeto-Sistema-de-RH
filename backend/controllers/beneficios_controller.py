@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from service import BeneficiosService
 from schemas import BeneficioCreate, BeneficioUpdate, BeneficioResponse
 from typing import List
-from utils import require_rh_or_admin, require_user_or_higher
+from utils import require_rh_or_admin, require_user_or_higher, log_access
 
 router = APIRouter(prefix="/beneficios", tags=["Beneficios"])
 service = BeneficiosService()
@@ -20,6 +20,12 @@ def create(data: BeneficioCreate, current_user: dict = Depends(require_rh_or_adm
 def get_all(current_user: dict = Depends(require_user_or_higher)):
     try:
         beneficios = service.get_all()
+        log_access(
+            id_usuario=current_user["sub"],
+            operacao="LIST_BENEFICIOS",
+            consulta="beneficios/",
+            result_count=len(beneficios)
+        )
         return beneficios
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
