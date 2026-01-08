@@ -15,7 +15,7 @@ class BeneficiosFuncionariosService:
         if not beneficio:
             raise ValueError("Benefício não encontrado.")
         
-        existente = self.repository.get_by_funcionario_e_beneficio(funcionario_id = funcionario_id, beneficio_id = beneficio_id)
+        existente = self.repository.get_by_funcionario_e_beneficio(id_funcionario = funcionario_id, id_beneficio = beneficio_id)
         if existente:
             raise ValueError("O funcionário já possui este benefício atribuído.")
 

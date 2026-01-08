@@ -10,12 +10,13 @@ service = PopulacaoRapidaService()
 @router.post("/sistema")
 def populate_system(qtd_funcionarios: int = 100, current_user: dict = Depends(require_admin)
 ):
-    try:
+    try: 
 
         log_access(
-            user_id=current_user["id"],
+            id_usuario=current_user["sub"],
             operacao="SEED_SYSTEM_START",
-            consulta="População rápida do sistema"
+            consulta="População rápida do sistema",
+            result_count= 0
         )
 
         service.populate_system(
@@ -24,7 +25,7 @@ def populate_system(qtd_funcionarios: int = 100, current_user: dict = Depends(re
         )
 
         log_access(
-            user_id=current_user["id"],
+            id_usuario=current_user["sub"],
             operacao="SEED_SYSTEM_END",
             consulta="População concluída",
             result_count=qtd_funcionarios
@@ -37,8 +38,9 @@ def populate_system(qtd_funcionarios: int = 100, current_user: dict = Depends(re
 
     except Exception as e:
         log_access(
-            user_id=current_user["id"],
+            id_usuario=current_user["sub"],
             operacao="SEED_SYSTEM_ERROR",
-            consulta=str(e)
+            consulta=str(e),
+            result_count= 0
         )
         raise HTTPException(status_code=400, detail=str(e))

@@ -67,7 +67,9 @@ class PopulacaoRapidaService:
 
             nome = self.fake.first_name()
             sobrenome = self.fake.last_name()
-            cpf = self.fake.cpf()
+
+            import re
+            cpf = re.sub(r"\D", "", self.fake.cpf())
 
             id_setor = random.choice(setores)
             id_cargo = random.choice(cargos)
@@ -113,7 +115,7 @@ class PopulacaoRapidaService:
 
             for beneficio_id in beneficios_por_cargo.get(cargo_nome, []):
                 self.benef_func_service.create(
-                    funcionario_id=func_id,
+                    funcionario_id= func_id,
                     beneficio_id=beneficio_id,
                     ativo=True
                 )
