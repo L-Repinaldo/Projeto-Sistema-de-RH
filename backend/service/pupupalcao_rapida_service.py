@@ -154,7 +154,7 @@ class PopulacaoRapidaService:
         cargos = self.cargo_repo.get_all()
         if not cargos:
             raise ValueError("Cargos indisponíveis.")
-        return [c["id"] for c in cargos if c["id"] != 3]
+        return [c["id"] for c in cargos if c["id"] != 3 and c['id'] != 1]
 
     def _map_beneficios_por_cargo(self):
 
