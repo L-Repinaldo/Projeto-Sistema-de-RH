@@ -1,7 +1,6 @@
 import datetime
 from typing import Callable
 
-# Função que será injetada em runtime
 _log_writer: Callable | None = None
 
 

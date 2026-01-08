@@ -18,7 +18,7 @@ class AvaliacoesService:
         if data_avaliacao > datetime.date.today():
             raise ValueError("A data da avaliação não pode ser no futuro.")
         
-        if not self.funcionarios_repo.get_by_id(id_funcionario = id_funcionario):
+        if not self.funcionarios_repo.get_by_id(funcionario_id = id_funcionario):
             raise ValueError("Funcionário não encontrado.")
         
         return self.repository.create(id_funcionario= id_funcionario, data_avaliacao= data_avaliacao, nota= nota)
@@ -28,11 +28,11 @@ class AvaliacoesService:
     
     def get_by_funcionario(self, id_funcionario):
 
-        funcionario =  self.funcionarios_repo.get_by_id(id_funcionario = id_funcionario)
+        funcionario =  self.funcionarios_repo.get_by_id(funcionario_id = id_funcionario)
         if not funcionario:
             raise ValueError("Funcionário não encontrado.")
         
-        avaliacoes = self.repository.get_by_funcionario(id_funcionario= id_funcionario)
+        avaliacoes = self.repository.get_by_funcionario(funcionario_id= id_funcionario)
         return avaliacoes
     
 

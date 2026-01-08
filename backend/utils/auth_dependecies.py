@@ -1,17 +1,15 @@
-# utils/auth_dependencies.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Callable
 
-from utils import jwt_util            # seu módulo jwt_util: create_access_token, verify_token, get_current_user
+from utils import jwt_util            
 from repositories import PermissoesRepository
 
 security = HTTPBearer(auto_error=False)
 
-# Module-level repository instance for efficiency
+
 permissoes_repo = PermissoesRepository()
 
-# nomes padronizados das permissoes (considere manter exatamente esses nomes na tabela)
 ADMIN_NAME = "ADMIN"
 RH_NAME = "RH"
 GERENTE_NAME = "GERENTE"

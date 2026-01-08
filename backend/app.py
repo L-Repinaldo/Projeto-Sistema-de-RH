@@ -8,7 +8,8 @@ from controllers import (
     funcionario_controller,
     logs_acesso_controller,
     permissoes_controller,
-    setores_controller
+    setores_controller,
+    populacao_rapida_controller
 )
 
 from utils.audit_logger import configure_logger
@@ -31,6 +32,7 @@ app.include_router(funcionario_controller.router)
 app.include_router(logs_acesso_controller.router)
 app.include_router(permissoes_controller.router)
 app.include_router(setores_controller.router)
+app.include_router(populacao_rapida_controller.router)
 
 if __name__ == "__main__":
     import uvicorn
