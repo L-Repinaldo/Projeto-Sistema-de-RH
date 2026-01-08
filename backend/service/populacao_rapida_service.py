@@ -81,7 +81,7 @@ class PopulacaoRapidaService:
 
             salario = self._gerar_salario(cargo_nome)
 
-            data_nascimento = self._random_date(1960, 2016)
+            data_nascimento = self._random_date(1960, 2006)
             data_admissao = self._random_date(2015, 2025)
 
             funcionario_id = self.func_service.create(

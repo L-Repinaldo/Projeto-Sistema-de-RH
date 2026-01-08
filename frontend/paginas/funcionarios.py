@@ -16,7 +16,8 @@ def funcionarios():
         setores_response = requests.get(f"{API_URL}/setores", headers=headers)
         if setores_response.status_code == 200:
             setores = setores_response.json()
-            setores_names = [s['nome'] for s in setores]
+            setores_map = {s["nome"]: s["id"] for s in setores}
+            setores_names = list(setores_map.keys())
         else:
             setores_names = []
             handle_auth_error(setores_response)
@@ -24,7 +25,8 @@ def funcionarios():
         cargos_response = requests.get(f"{API_URL}/cargos", headers=headers)
         if cargos_response.status_code == 200:
             cargos = cargos_response.json()
-            cargos_names = [c['nome'] for c in cargos]
+            cargos_map = {c["nome"] : c["id"] for c in cargos}
+            cargos_names = list(cargos_map.keys())
         else:
             cargos_names = []
             handle_auth_error(cargos_response)
@@ -32,7 +34,8 @@ def funcionarios():
         beneficios_response = requests.get(f"{API_URL}/beneficios", headers=headers)
         if beneficios_response.status_code == 200:
             beneficios = beneficios_response.json()
-            beneficios_names = [b['nome'] for b in beneficios]
+            beneficios_map = {b["nome"] : b["id"] for b in beneficios}
+            beneficios_names = list(beneficios_map.keys())
         else:
             beneficios_names = []
             handle_auth_error(beneficios_response)
@@ -69,6 +72,12 @@ def funcionarios():
             setor = st.selectbox("Setor", options=setores_names, key="criar_setor")
             cargo = st.selectbox("Cargo", options=cargos_names, key="criar_cargo")
             beneficios = st.multiselect("Benefícios", options=beneficios_names, key="criar_beneficios")
+
+            id_setor = setores_map[setor]
+            id_cargo = cargos_map[cargo]
+            ids_beneficios = [beneficios_map[b] for b in beneficios]
+
+
             submitted = st.form_submit_button("Criar")
             if submitted:
                 payload = {
@@ -79,9 +88,9 @@ def funcionarios():
                     "salario" : salario,
                     "data_nascimento": str(data_nascimento),
                     "data_admissao": str(data_admissao),
-                    "setor": setor,
-                    "cargo": cargo,
-                    "beneficios": beneficios
+                    "id_setor": id_setor,
+                    "id_cargo": id_cargo,
+                    "beneficios": ids_beneficios
                 }
                 response = requests.post(f"{API_URL}/funcionarios", json=payload, headers=headers)
                 if response.status_code == 200:

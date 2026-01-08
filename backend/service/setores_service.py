@@ -41,10 +41,12 @@ class SetoresService:
         if not setor:
             raise ValueError("Setor não encontrado")
         
-        if nome:
+        if nome is not None:
             setor_com_nome = self.repository.get_by_name(nome=nome)
             if setor_com_nome and setor_com_nome["id"] != id_setor:
                 raise ValueError("Já existe outro setor com esse nome.")
+            else:
+                setor["nome"] = nome
         
         if id_gerente is not None:
 

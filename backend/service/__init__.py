@@ -7,4 +7,4 @@ from .usuarios_service import UsuariosService
 from .logs_acesso_service import LogsAcessoService
 from .cargos_service import CargosService
 from .permissoes_service import PermissoesService
-from .pupupalcao_rapida_service import PopulacaoRapidaService
+from .populacao_rapida_service import PopulacaoRapidaService
