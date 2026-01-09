@@ -18,11 +18,9 @@ def populate_system(qtd_funcionarios: int = 100, current_user: dict = Depends(re
             consulta="População rápida do sistema",
             result_count= 0
         )
+         
+        service.populate_system( qtd_funcionarios=qtd_funcionarios )
 
-        service.populate_system(
-            qtd_funcionarios=qtd_funcionarios,
-            current_user=current_user
-        )
 
         log_access(
             id_usuario=current_user["sub"],

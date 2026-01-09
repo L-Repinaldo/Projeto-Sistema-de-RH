@@ -37,8 +37,7 @@ class PopulacaoRapidaService:
     # Método principal
     # ======================================================
 
-    def populate_system(self, qtd_funcionarios: int, current_user: dict):
-
+    def populate_system(self, qtd_funcionarios: int):
 
         setores = self._get_setores()
         cargos = self._get_cargos()
@@ -59,11 +58,12 @@ class PopulacaoRapidaService:
     # Criação de funcionários
     # ======================================================
 
-    def _create_funcionarios(self, qtd_funcionarios: int, setores: list, cargos: list):
+    def _create_funcionarios(self, qtd_funcionarios, setores: list, cargos: list):
+
 
         funcionarios_ids = []
 
-        for _ in range(qtd_funcionarios):
+        for _ in range(int(qtd_funcionarios)):
 
             nome = self.fake.first_name()
             sobrenome = self.fake.last_name()

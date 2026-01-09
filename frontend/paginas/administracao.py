@@ -39,7 +39,7 @@ def administracao():
         with st.spinner("Populando o sistema... Isso pode levar alguns segundos."):
             response = requests.post(
                 f"{API_URL}/admin/populacao/sistema",
-                params={"qtd_funcionarios": qtd_funcionarios},
+                params={"qtd_funcionarios": int(qtd_funcionarios)},
                 headers=headers
             )
 

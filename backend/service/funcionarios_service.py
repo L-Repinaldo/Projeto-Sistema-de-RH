@@ -13,18 +13,15 @@ class FuncionariosService:
 
     
     def create(self, nome, sobrenome, cpf, email, id_setor, id_cargo, salario, data_nascimento, data_admissao):
-
-        if self.repository.get_by_nome_completo(nome = nome, sobrenome = sobrenome):
-            raise ValueError("Já existe funcionário com esse nome completo.")
-
+        
         if self.repository.get_by_cpf(cpf = cpf):
             raise ValueError("CPF já cadastrado.")
-        
+
         if self.repository.get_by_email(email = email):
             raise ValueError("Email já cadastrado")
         
         setor = self.setores_repo.get_by_id(id_setor= id_setor)
-        if not setor:
+        if not setor: 
             raise ValueError("Setor não encontrado")
         
         cargo = self.cargos_repo.get_by_id(id_cargo= id_cargo)
@@ -36,13 +33,10 @@ class FuncionariosService:
         if not cargo["ativo"]:
             raise ValueError("Cargo está desativado e não pode ser atribuído.")
 
-        funcionario =  self.repository.create(nome = nome, sobrenome = sobrenome, cpf = cpf, email= email, id_setor = id_setor, id_cargo = id_cargo,
+        return  self.repository.create(nome = nome, sobrenome = sobrenome, cpf = cpf, email= email, id_setor = id_setor, id_cargo = id_cargo,
                                       salario= salario, data_nascimento= data_nascimento, data_admissao= data_admissao )
         
-        self.setores_repo.update(id_setor= id_setor, nome= setor["nome"], id_gerente= funcionario["id"] )
         
-        return funcionario
-
     def get_by_nome(self, nome):
 
         funcionarios =  self.repository.get_by_nome(nome= nome)
