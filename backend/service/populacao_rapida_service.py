@@ -1,5 +1,6 @@
 from faker import Faker
 import random
+import re
 from datetime import date, timedelta
 
 from repositories import (
@@ -17,6 +18,7 @@ from service import (
     AvaliacoesService
 )
 
+
 class PopulacaoRapidaService:
 
     def __init__(self):
@@ -32,6 +34,8 @@ class PopulacaoRapidaService:
         self.func_service = FuncionariosService()
         self.benef_func_service = BeneficiosFuncionariosService()
         self.aval_service = AvaliacoesService()
+
+        self.emails_usados = self._carregar_emails_existentes()
 
     # ======================================================
     # Método principal
@@ -49,10 +53,11 @@ class PopulacaoRapidaService:
             cargos=cargos
         )
 
+        if not funcionarios_ids:
+            raise ValueError("Nenhum funcionário foi criado.")
+
         self._vincular_beneficios(funcionarios_ids, beneficios_por_cargo)
         self._criar_avaliacoes(funcionarios_ids)
-
-
 
     # ======================================================
     # Criação de funcionários
@@ -60,45 +65,70 @@ class PopulacaoRapidaService:
 
     def _create_funcionarios(self, qtd_funcionarios, setores: list, cargos: list):
 
-
         funcionarios_ids = []
 
         for _ in range(int(qtd_funcionarios)):
+            try:
+                nome = self.fake.first_name()
+                sobrenome = self.fake.last_name()
 
-            nome = self.fake.first_name()
-            sobrenome = self.fake.last_name()
+                cpf = re.sub(r"\D", "", self.fake.cpf())
 
-            import re
-            cpf = re.sub(r"\D", "", self.fake.cpf())
+                id_setor = random.choice(setores)
+                id_cargo = random.choice(cargos)
 
-            id_setor = random.choice(setores)
-            id_cargo = random.choice(cargos)
+                cargo = self.cargo_repo.get_by_id(id_cargo=id_cargo)
+                cargo_nome = cargo["nome"]
 
-            cargo = self.cargo_repo.get_by_id(id_cargo=id_cargo)
-            cargo_nome = cargo["nome"]
+                email = self._gerar_email_unico(nome, sobrenome)
 
-            email = f"{nome.lower()}.{sobrenome.lower()}@empresa.com"
+                salario = self._gerar_salario(cargo_nome)
 
-            salario = self._gerar_salario(cargo_nome)
+                data_nascimento = self._random_date(1960, 2006)
+                data_admissao = self._random_date(2015, 2025)
 
-            data_nascimento = self._random_date(1960, 2006)
-            data_admissao = self._random_date(2015, 2025)
+                funcionario_id = self.func_service.create(
+                    nome=nome,
+                    sobrenome=sobrenome,
+                    cpf=cpf,
+                    email=email,
+                    id_setor=id_setor,
+                    id_cargo=id_cargo,
+                    salario=salario,
+                    data_nascimento=data_nascimento,
+                    data_admissao=data_admissao
+                )
 
-            funcionario_id = self.func_service.create(
-                nome=nome,
-                sobrenome=sobrenome,
-                cpf=cpf,
-                email=email,
-                id_setor=id_setor,
-                id_cargo=id_cargo,
-                salario=salario,
-                data_nascimento=data_nascimento,
-                data_admissao=data_admissao
-            )
+                funcionarios_ids.append(funcionario_id)
 
-            funcionarios_ids.append(funcionario_id)
+            except Exception as e:
+                print(f"[SEED] Erro ao criar funcionário, pulando: {e}")
+                continue
 
         return funcionarios_ids
+
+    # ======================================================
+    # Email único
+    # ======================================================
+
+    def _carregar_emails_existentes(self):
+        funcionarios = self.func_repo.get_all()
+        if not funcionarios:
+            return set()
+        return {f["email"] for f in funcionarios if f.get("email")}
+
+    def _gerar_email_unico(self, nome, sobrenome):
+        base = f"{nome.lower()}.{sobrenome.lower()}@empresa.com"
+        email = base
+        contador = 1
+
+        while email in self.emails_usados:
+            email = f"{nome.lower()}.{sobrenome.lower()}{contador}@empresa.com"
+            contador += 1
+
+        self.emails_usados.add(email)
+        return email
+    
 
     # ======================================================
     # Vínculo de benefícios
@@ -115,13 +145,13 @@ class PopulacaoRapidaService:
 
             for beneficio_id in beneficios_por_cargo.get(cargo_nome, []):
                 self.benef_func_service.create(
-                    funcionario_id= func_id,
+                    funcionario_id=func_id,
                     beneficio_id=beneficio_id,
                     ativo=True
                 )
 
     # ======================================================
-    # Avaliações 
+    # Avaliações
     # ======================================================
 
     def _criar_avaliacoes(self, funcionarios_ids: list):
@@ -154,7 +184,7 @@ class PopulacaoRapidaService:
         cargos = self.cargo_repo.get_all()
         if not cargos:
             raise ValueError("Cargos indisponíveis.")
-        return [c["id"] for c in cargos if c["id"] != 3 and c['id'] != 1]
+        return [c["id"] for c in cargos if c["id"] != 3 and c["id"] != 1]
 
     def _map_beneficios_por_cargo(self):
 
