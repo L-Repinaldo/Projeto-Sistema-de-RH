@@ -52,12 +52,17 @@ class PopulacaoRapidaService:
             setores=setores,
             cargos=cargos
         )
+        print("criou")
 
         if not funcionarios_ids:
             raise ValueError("Nenhum funcionário foi criado.")
 
         self._vincular_beneficios(funcionarios_ids, beneficios_por_cargo)
+        print("vinculou")
         self._criar_avaliacoes(funcionarios_ids)
+        print("avaliou")
+        self._recalcular_salarios(funcionarios_ids) 
+        print("Terminou")
 
     # ======================================================
     # Criação de funcionários
@@ -66,6 +71,8 @@ class PopulacaoRapidaService:
     def _create_funcionarios(self, qtd_funcionarios, setores: list, cargos: list):
 
         funcionarios_ids = []
+
+        i = 0
 
         for _ in range(int(qtd_funcionarios)):
             try:
@@ -82,7 +89,7 @@ class PopulacaoRapidaService:
 
                 email = self._gerar_email_unico(nome, sobrenome)
 
-                salario = self._gerar_salario(cargo_nome)
+                salario_base = self._salario_base_por_cargo(cargo_nome)
 
                 data_nascimento = self._random_date(1960, 2006)
                 data_admissao = self._random_date(2015, 2025)
@@ -94,18 +101,67 @@ class PopulacaoRapidaService:
                     email=email,
                     id_setor=id_setor,
                     id_cargo=id_cargo,
-                    salario=salario,
+                    salario=salario_base,
                     data_nascimento=data_nascimento,
                     data_admissao=data_admissao
                 )
 
                 funcionarios_ids.append(funcionario_id)
+                i+=1
+                print(i)
 
             except Exception as e:
                 print(f"[SEED] Erro ao criar funcionário, pulando: {e}")
                 continue
 
         return funcionarios_ids
+    
+
+    # ======================================================
+    # Salário base por cargo (agora separado)
+    # ======================================================
+
+    def _salario_base_por_cargo(self, cargo_nome: str):
+
+        bases = {
+            "Administrador do Sistema": (5000, 8000),
+            "Analista de RH": (4000, 7000),
+            "Gerente": (8000, 12000),
+            "Funcionário": (1500, 2500),
+        }
+
+        minimo, maximo = bases.get(cargo_nome, (3000, 5000))
+        return random.randint(minimo, maximo)
+    
+    # ======================================================
+    # RECÁLCULO REAL DE SALÁRIO
+    # ======================================================
+
+    def _recalcular_salarios(self, funcionarios_ids):
+
+        ano_atual = date.today().year
+
+        for func_id in funcionarios_ids:
+
+            func = self.func_repo.get_by_id(funcionario_id=func_id)
+
+            salario_base = float(func['salario'])
+
+            anos_empresa = max(0, ano_atual - func["data_admissao"].year)
+
+            avals = self.avaliacoes_repo.get_by_funcionario(func_id)
+            if avals:
+                media_notas = sum(a["nota"] for a in avals) / len(avals)
+            else:
+                media_notas = 5.0  # neutro
+
+            bonus_tempo = 2200 * (1 - pow(2.71828, -anos_empresa / 6))
+            bonus_desempenho = media_notas * 220
+
+            salario_final = salario_base + bonus_tempo + bonus_desempenho
+            salario_final = max(1200, round(salario_final, 2))
+
+            self.func_service.update_salario(func_id, salario_final)
 
     # ======================================================
     # Email único
@@ -161,6 +217,10 @@ class PopulacaoRapidaService:
             func = self.func_repo.get_by_id(funcionario_id=func_id)
 
             min_date = func["data_admissao"].year + 1
+
+            if min_date > 2025:
+                continue
+            
             qtd_avaliacoes = 2025 - min_date
 
             for _ in range(qtd_avaliacoes):
@@ -200,18 +260,6 @@ class PopulacaoRapidaService:
             "Gerente": ids,
             "Funcionário": [i for i in ids if i <= 3],
         }
-
-    def _gerar_salario(self, cargo_nome: str):
-
-        ranges = {
-            "Administrador do Sistema": (4000, 10000),
-            "Analista de RH": (3000, 11000),
-            "Gerente": (4000, 15000),
-            "Funcionário": (1200, 3000),
-        }
-
-        minimo, maximo = ranges.get(cargo_nome, (3000, 5000))
-        return random.randint(minimo, maximo)
 
     def _random_date(self, start_year: int, end_year: int):
 

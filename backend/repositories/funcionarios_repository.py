@@ -442,3 +442,37 @@ class FuncionariosRepository:
             }
             for r in rows
         ]
+    
+
+    def update_salario(self,  funcionario_id, salario = None):
+
+        conn = self.conn_factory()
+        
+        cur = conn.cursor()
+
+        fields = []
+        values = []
+
+        if salario is not None:
+
+            fields.append("salario = %s")
+            values.append(salario)
+
+        if not fields:
+            
+            cur.close()
+            conn.close()
+            return False
+
+        query = f"""
+                UPDATE funcionarios
+                SET {','.join(fields) }
+                WHERE id = %s;
+        """
+
+        values.append(funcionario_id)
+        cur.execute(query, values)
+
+        cur.close()
+        conn.close()
+        return True

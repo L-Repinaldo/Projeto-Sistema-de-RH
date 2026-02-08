@@ -156,3 +156,13 @@ class FuncionariosService:
             self.avaliacoes_repo.delete_by_funcionario(id_funcionario= funcionario_id)
 
         return self.repository.delete(funcionario_id= funcionario_id)
+    
+
+    def update_salario(self, funcionario_id, salario = None):
+        
+        funcionario = self.repository.get_by_id(funcionario_id= funcionario_id)
+
+        if not funcionario:
+            raise ValueError("Funcionário não encontrado.")
+
+        return self.repository.update_salario(funcionario_id = funcionario_id, salario = salario)
