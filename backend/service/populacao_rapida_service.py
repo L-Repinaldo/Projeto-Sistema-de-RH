@@ -118,7 +118,7 @@ class PopulacaoRapidaService:
     
 
     # ======================================================
-    # Salário base por cargo (agora separado)
+    # Salário base por cargo 
     # ======================================================
 
     def _salario_base_por_cargo(self, cargo_nome: str):
