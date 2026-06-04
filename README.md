@@ -162,13 +162,3 @@ Esses cuidados tornam o sistema compatível com boas práticas exigidas por legi
 📌 Considerações Finais
 
 Este sistema foi desenvolvido com foco em robustez, clareza arquitetural e segurança, representando uma aplicação de RH realista, auditável e extensível.
-
-Ele demonstra domínio de:
-
-- arquitetura backend,
-
-- controle de acesso,
-
-- boas práticas de privacidade,
-
-- e desenvolvimento de APIs profissionais.
