@@ -187,7 +187,7 @@ SECRET_KEY=<chave-secreta>
 4. Inicie o backend:
 
 ```bash
-uvicorn backend.app:app --reload --host 0.0.0.0 --port 8086
+python app.py
 ```
 
 5. Inicie o frontend:

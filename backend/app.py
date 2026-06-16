@@ -22,7 +22,6 @@ logs_service = LogsAcessoService()
 configure_logger(logs_service.create)
 
 
-# Include routers
 app.include_router(usuarios_controller.router)
 app.include_router(avaliacoes_controller.router)
 app.include_router(beneficios_controller.router)
