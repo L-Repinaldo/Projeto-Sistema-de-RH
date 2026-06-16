@@ -187,7 +187,7 @@ SECRET_KEY=<chave-secreta>
 4. Inicie o backend:
 
 ```bash
-python app.py
+python backend/app.py
 ```
 
 5. Inicie o frontend:
