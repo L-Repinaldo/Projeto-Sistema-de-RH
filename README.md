@@ -66,6 +66,9 @@ O módulo de população rápida foi desenvolvido para gerar volume consideráve
 
 ## Entidades e Estrutura do Banco
 
+<img width="1411" height="594" alt="BD RH - postgres - public (Claro)" src="https://github.com/user-attachments/assets/e1a7200f-3025-4197-84d4-38de38df9b41" />
+
+
 O modelo de dados é orientado a um cenário de RH e pode ser entendido como um DER de relacionamento entre:
 
 - `funcionarios`
