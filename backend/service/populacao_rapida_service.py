@@ -37,10 +37,6 @@ class PopulacaoRapidaService:
 
         self.emails_usados = self._carregar_emails_existentes()
 
-    # ======================================================
-    # Método principal
-    # ======================================================
-
     def populate_system(self, qtd_funcionarios: int):
 
         setores = self._get_setores()
@@ -52,21 +48,13 @@ class PopulacaoRapidaService:
             setores=setores,
             cargos=cargos
         )
-        print("criou")
-
+        
         if not funcionarios_ids:
             raise ValueError("Nenhum funcionário foi criado.")
 
         self._vincular_beneficios(funcionarios_ids, beneficios_por_cargo)
-        print("vinculou")
         self._criar_avaliacoes(funcionarios_ids)
-        print("avaliou")
         self._recalcular_salarios(funcionarios_ids) 
-        print("Terminou")
-
-    # ======================================================
-    # Criação de funcionários
-    # ======================================================
 
     def _create_funcionarios(self, qtd_funcionarios, setores: list, cargos: list):
 
@@ -116,11 +104,6 @@ class PopulacaoRapidaService:
 
         return funcionarios_ids
     
-
-    # ======================================================
-    # Salário base por cargo 
-    # ======================================================
-
     def _salario_base_por_cargo(self, cargo_nome: str):
 
         bases = {
@@ -132,10 +115,6 @@ class PopulacaoRapidaService:
 
         minimo, maximo = bases.get(cargo_nome, (3000, 5000))
         return random.randint(minimo, maximo)
-    
-    # ======================================================
-    # RECÁLCULO REAL DE SALÁRIO
-    # ======================================================
 
     def _recalcular_salarios(self, funcionarios_ids):
 
@@ -163,10 +142,6 @@ class PopulacaoRapidaService:
 
             self.func_service.update_salario(func_id, salario_final)
 
-    # ======================================================
-    # Email único
-    # ======================================================
-
     def _carregar_emails_existentes(self):
         funcionarios = self.func_repo.get_all()
         if not funcionarios:
@@ -184,11 +159,6 @@ class PopulacaoRapidaService:
 
         self.emails_usados.add(email)
         return email
-    
-
-    # ======================================================
-    # Vínculo de benefícios
-    # ======================================================
 
     def _vincular_beneficios(self, funcionarios_ids: list, beneficios_por_cargo: dict):
 
@@ -205,10 +175,6 @@ class PopulacaoRapidaService:
                     beneficio_id=beneficio_id,
                     ativo=True
                 )
-
-    # ======================================================
-    # Avaliações
-    # ======================================================
 
     def _criar_avaliacoes(self, funcionarios_ids: list):
 
@@ -229,10 +195,6 @@ class PopulacaoRapidaService:
                     nota=round(random.uniform(0.0, 10.0), 1),
                     data_avaliacao=self._random_date(min_date, 2025),
                 )
-
-    # ======================================================
-    # Helpers
-    # ======================================================
 
     def _get_setores(self):
         setores = self.setor_repo.get_all()
